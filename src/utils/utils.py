@@ -57,7 +57,7 @@ def csv_to_python_list(file_path: str):
     :param file_path: File path of the csv file
     :return: Python list corresponding to the csv
     """
-    with open(file_path, 'rb') as f:
+    with open(file_path, 'r') as f:
         reader = csv.reader(f)
         list_data = list(reader)
     return list_data
