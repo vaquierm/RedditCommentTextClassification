@@ -8,14 +8,11 @@ from src.utils.utils import csv_to_python_list
 
 class Dictionary:
 
-    def __init__(self, vocabulary_file_path: str, vocabulary_name: str):
+    def __init__(self, vocabulary_file_path: str):
         """
         Creates a Dictionary based on a vocabulary
         :param vocabulary_file_path: File path of the vocabulary to base this dictionary on
-        :param vocabulary_name: Name of the vocabulary being loaded
         """
-
-        self.vocabulary_name = vocabulary_name
 
         # Load the vocabulary from the folder
         vocabulary = csv_to_python_list(vocabulary_file_path)

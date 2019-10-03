@@ -100,3 +100,17 @@ def load_raw_test_data(file_path: str):
     df = pd.read_csv(file_path)
     ids = list(df['id'])
     return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
+
+
+def save_processed_data(X, Y, file_path: str):
+    """
+    Save the arrays X and Y into a csv file
+    :param X: X
+    :param Y: Y
+    :param file_path: File to which to save
+    """
+    if X.shape[0] != Y.shape[0]:
+        raise Exception("The cannot save X len(" + str(X.shape[0]) + ") and Y len(" + str(Y.shape[0]) + ") as they differ in length")
+    combined = np.hstack((X, Y.reshape((Y.shape[0], 1))))
+
+    np.savetxt(file_path, combined, delimiter=',')
