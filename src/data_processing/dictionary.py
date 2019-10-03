@@ -1,3 +1,5 @@
+import numpy as np
+
 from src.utils.utils import csv_to_python_list
 
 
@@ -33,4 +35,12 @@ class Dictionary:
         :param comments: List of string containing all comments to be converted
         :return: X (NxM) where N is the number of comments and M is the number of words in our dictionary
         """
-        # TODO
+        X = np.zeros((len(comments), self.M))
+
+        # For each comment, go through every word and create a feature vector
+        for i in range(len(comments)):
+            words = comments[i].split(' ')
+            for word in words:
+                if word in self.word_map:
+                    X[i][self.word_map[word]] = 1
+        return X
