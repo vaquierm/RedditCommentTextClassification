@@ -1,3 +1,4 @@
+import os
 
 # Contains the raw data downloaded from https://www.kaggle.com/c/reddit-comment-classification-comp-551/data
 raw_data_dir_path: str = "../../data/raw_data"
@@ -16,7 +17,15 @@ models_to_run = ["LR", "NB", "DT", "SVM", "SUPER"]
 
 
 def main():
-    print()
+    # Check if all directories exist
+    if not os.path.isdir(raw_data_dir_path):
+        raise Exception("The raw data folder does not exist")
+    if not os.path.isdir(processed_dir_path):
+        raise Exception("The processed data folder does not exist")
+    if not os.path.isdir(vocabularies_dir_path):
+        raise Exception("The vocabularies folder does not exist")
+    if not os.path.isdir(results_dir_path):
+        raise Exception("The results folder does not exist")
 
 
 if __name__ == '__main__':

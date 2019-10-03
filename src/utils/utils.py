@@ -1,6 +1,7 @@
 import csv
 import pandas as pd
 import numpy as np
+import os
 
 
 # This file contains any util functions needed across the project.
@@ -57,6 +58,8 @@ def csv_to_python_list(file_path: str):
     :param file_path: File path of the csv file
     :return: Python list corresponding to the csv
     """
+    if not os.path.isfile(file_path):
+        raise Exception("The file " + file_path + " from which you are trying to load your dictionary does not exist")
     with open(file_path, 'r') as f:
         reader = csv.reader(f)
         list_data = list(reader)
@@ -67,7 +70,10 @@ def python_list_to_csv(file_path: str, list_data: list):
     """
     Writes data from a python list to a csv file
     :param file_path: File path to write the data to
+    :param list_data: The python list to be saved to csv
     """
+    if not os.path.isdir(os.path.dirname(file_path)):
+        raise Exception("The directory " + os.path.dirname(file_path) + " to which you want to save your vocabulary data does not exist")
     with open(file_path, 'w') as writeFile:
         writer = csv.writer(writeFile)
         writer.writerows(list_data)
@@ -80,6 +86,9 @@ def load_raw_training_data(file_path: str, convert_subreddits_to_number: bool = 
     :param convert_subreddits_to_number: If true, converts all subreddits to a number corresponding to its class
     :return: List of comments, (List of associated subreddits or numpy array of numbers corresponding to the subreddits)
     """
+    if not os.path.isfile(file_path):
+        raise Exception("The file " + file_path + " from which you are trying to load your training data does not exist")
+
     df = pd.read_csv(file_path)
     subreddits = list(df['subreddits'])
 
@@ -97,6 +106,9 @@ def load_raw_test_data(file_path: str):
     :param file_path: File path of raw data
     :return: numpy array (Nx1) of id's of comments, List of comments
     """
+    if not os.path.isfile(file_path):
+        raise Exception("The file " + file_path + " from which you are trying to load your test data does not exist")
+
     df = pd.read_csv(file_path)
     ids = list(df['id'])
     return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
@@ -109,6 +121,8 @@ def save_processed_data(X, Y, file_path: str):
     :param Y: Y
     :param file_path: File to which to save
     """
+    if not os.path.isdir(os.path.dirname(file_path)):
+        raise Exception("The directory " + os.path.dirname(file_path) + " to which you want to save your processed data does not exist")
     if X.shape[0] != Y.shape[0]:
         raise Exception("The cannot save X len(" + str(X.shape[0]) + ") and Y len(" + str(Y.shape[0]) + ") as they differ in length")
     combined = np.hstack((X, Y.reshape((Y.shape[0], 1))))
