@@ -1,7 +1,25 @@
+import numpy as np
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+
+
 from src.models.Model import Model
 
 
 class SuperModel(Model):
+
+    def __init__(self):
+        super().__init__()
+
+        # Create all the models that will be used in the ensemble
+        self.models = []
+        self.models.append(SVC(kernel='linear', decision_function_shape='ovr', class_weight='balanced'))
+        self.models.append(SVC(kernel='rbf', decision_function_shape='ovr', class_weight='balanced'))
+        self.models.append(SVC(kernel='poly', decision_function_shape='ovr', class_weight='balanced'))
+        self.models.append(
+            RandomForestClassifier(n_estimators=150, max_depth=10, random_state=0, class_weight='balanced'))
+        self.models.append(
+            RandomForestClassifier(n_estimators=150, max_depth=10, random_state=0, class_weight='balanced'))
 
     def fit(self, X, Y):
         """
@@ -11,8 +29,10 @@ class SuperModel(Model):
         :return: None
         """
         super().fit(X, Y)
-        # TODO: Implement this
-        # https://github.com/vaquierm/RedditCommentTextClassification/issues/7
+
+        # Fit the data to each classifier in our ensemble model
+        for model in self.models:
+            model.fit(X, Y)
 
     def predict(self, X):
         """
@@ -21,4 +41,18 @@ class SuperModel(Model):
         :return: The predicted labels based on the training
         """
         super().predict(X)
-        # TODO: Implement this
+
+        N = X.shape[0]
+
+        predictions = np.empty((N, self.M))
+        # Predict for each model
+        for i in range(len(self.models)):
+            predictions[:, i] = self.models[i].predict(X)
+
+        voted_predictions = np.empty(N)
+        # Collect the votes of each classifiers
+        for i in range(N):
+            unique, counts = np.unique(predictions[i], return_counts=True)
+            voted_predictions[i] = unique[np.where(counts == counts.amax)[0]]
+
+        return voted_predictions
