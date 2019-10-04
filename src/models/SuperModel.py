@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 
 from src.models.Model import Model
@@ -11,15 +12,16 @@ class SuperModel(Model):
     def __init__(self):
         super().__init__()
 
-        # Create all the models that will be used in the ensemble
+        # Create all the models that will be used in the ensemble # TODO: Figure out what models are good here
         self.models = []
         self.models.append(SVC(kernel='linear', decision_function_shape='ovr', class_weight='balanced'))
         self.models.append(SVC(kernel='rbf', decision_function_shape='ovr', class_weight='balanced'))
-        self.models.append(SVC(kernel='poly', decision_function_shape='ovr', class_weight='balanced'))
         self.models.append(
             RandomForestClassifier(n_estimators=150, max_depth=10, random_state=0, class_weight='balanced'))
         self.models.append(
             RandomForestClassifier(n_estimators=150, max_depth=10, random_state=0, class_weight='balanced'))
+
+        self.meta_model = LogisticRegression()
 
     def fit(self, X, Y):
         """
@@ -44,7 +46,7 @@ class SuperModel(Model):
 
         N = X.shape[0]
 
-        predictions = np.empty((N, self.M))
+        predictions = np.empty((N, len(self.models)))
         # Predict for each model
         for i in range(len(self.models)):
             predictions[:, i] = self.models[i].predict(X)
@@ -53,6 +55,6 @@ class SuperModel(Model):
         # Collect the votes of each classifiers
         for i in range(N):
             unique, counts = np.unique(predictions[i], return_counts=True)
-            voted_predictions[i] = unique[np.where(counts == counts.amax)[0]]
+            voted_predictions[i] = unique[np.where(counts == counts.max())[0][0]]
 
         return voted_predictions
