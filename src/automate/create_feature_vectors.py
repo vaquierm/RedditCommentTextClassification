@@ -1,7 +1,7 @@
 import os
 
 
-from src.main import raw_data_dir_path, vocabularies_dir_path, processed_dir_path, vocabularies_to_run
+from src.config import raw_data_dir_path, vocabularies_dir_path, processed_dir_path, vocabularies_to_run
 from src.data_processing.dictionary import Dictionary
 from src.utils.utils import load_raw_training_data, load_raw_test_data, save_processed_data
 
