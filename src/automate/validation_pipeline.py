@@ -1,4 +1,4 @@
-from src.main import vocabularies_to_run, models_to_run
+from src.config import vocabularies_to_run, models_to_run
 
 # This file contains all automation for validating the different models against different vocabularies
 
