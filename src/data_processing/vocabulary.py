@@ -15,7 +15,6 @@ from nltk.tokenize import TweetTokenizer
 # Lemmatization was compared using diff libraries https://www.machinelearningplus.com/nlp/lemmatization-examples-python/
 
 def main():
-    print()
     create_vocab()
 
 
@@ -86,8 +85,10 @@ def create_vocab():
     print("new inputs from lemmatization")
     print(inputs)
 
-    inputs = ['allo', 'bien', 'bonjour', 'https://youtube.com/ahsss.eee', 'bien']
-    # TODO marine change the inputs by passing the comments already broken down into their vocabs as well as the tweet, smileys, and links.
+    #todo need to find a way to tokenize, OR merge matrices for each Lemmatization, urls, smiley, and coooool. at the end.
+    #inputs = ['allo', 'bien', 'bonjour', 'https://youtube.com/ahsss.eee', 'bien']
+    #cannot have inputs = [['allo', 'bien'], ['bonjour', 'https://youtube.com/ahsss.eee', 'bien']]
+
     X = vectorizer.fit_transform(inputs)
     vocab = vectorizer.get_feature_names()
     # add manually a word URL but needs work to be part of the matrix. (maybe simply a counter per comments)
