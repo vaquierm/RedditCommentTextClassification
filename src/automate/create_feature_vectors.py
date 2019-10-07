@@ -1,9 +1,9 @@
 import os
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, ENGLISH_STOP_WORDS
 
 
-from src.config import raw_data_dir_path, vocabularies_dir_path, processed_dir_path, vocabularies_to_run
-from src.data_processing.dictionary import Dictionary
-from src.utils.utils import load_raw_training_data, load_raw_test_data, save_processed_data
+from src.config import raw_data_dir_path, vocabularies_dir_path, processed_dir_path, vocabularies_to_run, vectorizers_to_run
+from src.utils.utils import load_raw_training_data, load_raw_test_data, save_processed_data, python_list_to_csv
 
 # This file contains the automation of converting all the raw data to feature vectors
 
@@ -17,33 +17,40 @@ def convert_all_raw_data_to_feature_vectors():
     for vocabulary in vocabularies_to_run:
         print("\tConverting raw data with respect to vocabulary: " + vocabulary)
 
-        # Create a dictionary
-        vocab_file = os.path.join(vocabularies_dir_path, vocabulary + "_vocab.csv")
-        dictionary = Dictionary(vocab_file)
+        for vec in vectorizers_to_run:
+            print("\t\tConverting raw data to feature vector with vectorizer: " + vec)
 
-        # Get the raw data corresponding to this dictionary
-        raw_train_data_path = os.path.join(raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
-        comments, Y = load_raw_training_data(raw_train_data_path)
+            # Create a vectoriser
+            if vec == "BINARY":
+                vectorizer = CountVectorizer(stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1), strip_accents='ascii', binary=True)
+            elif vec == "TFIDF":
+                vectorizer = TfidfVectorizer(stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1), strip_accents='ascii')
+            else:
+                raise Exception("The type of vectorizer " + vec + " is not known")
 
-        # Convert the comments to a feature vector
-        X = dictionary.comments_to_feature_vector(comments)
+            # Get the raw data corresponding to this dictionary
+            raw_train_data_path = os.path.join("..", raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
+            comments, Y = load_raw_training_data(raw_train_data_path)
 
-        # Write the feature vectors to the processed data
-        processed_train_data_file = os.path.join(processed_dir_path, vocabulary + "_train_processed.csv")
-        save_processed_data(X, Y, processed_train_data_file)
+            # Vectorize the training data
+            X = vectorizer.fit_transform(comments).toarray()
 
-        # Get the raw test data
-        raw_test_data_path = os.path.join(raw_data_dir_path, vocabulary + "_test_raw_clean.csv")
-        ids, comments = load_raw_test_data(raw_test_data_path)
+            # Write the feature vectors to the processed data
+            processed_train_data_file = os.path.join("..", processed_dir_path, vocabulary + "_" + vec + "_train_processed.csv")
+            save_processed_data(X, Y, processed_train_data_file)
 
-        # Convert the data to feature vector
-        X = dictionary.comments_to_feature_vector(comments)
+            # Get the raw test data
+            raw_test_data_path = os.path.join("..", raw_data_dir_path, vocabulary + "_test_raw_clean.csv")
+            ids, comments = load_raw_test_data(raw_test_data_path)
 
-        # Write the feature vectors to the processed data
-        processed_test_data_file = os.path.join(processed_dir_path, vocabulary + "_test_processed.csv")
-        save_processed_data(X, ids, processed_test_data_file)
+            # Convert the data to feature vector
+            X = vectorizer.transform(comments).toarray()
 
-    print("Done converting all raw data to feature vectors")
+            # Write the feature vectors to the processed data
+            processed_test_data_file = os.path.join("..", processed_dir_path, vocabulary + "_" + vec + "_test_processed.csv")
+            save_processed_data(X, ids, processed_test_data_file)
+
+        print("Done converting all raw data to feature vectors")
 
 
 if __name__ == '__main__':
