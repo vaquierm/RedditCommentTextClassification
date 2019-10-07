@@ -1,21 +1,24 @@
 # This file contains all functions to related to creating a clean vocabulary
 import nltk
 import re
-from src.utils.utils import save_cleaned_raw_data
-from sklearn.feature_extraction.text import CountVectorizer
-from nltk.corpus import stopwords, wordnet
+from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 from nltk.tokenize import TweetTokenizer
 
 # Lemmatization was compared using diff libraries https://www.machinelearningplus.com/nlp/lemmatization-examples-python/
 
-def main():
-    create_vocab()
 
-def create_vocab(comments_train):
+def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
+    """
+    Creates a vocabulary from the training set of comments.
+    Both the training and testing vocabularies are processed and returned
+    :param comments_train: All raw comments from the training set
+    :param comments_test: All raw comments from the testing set
+    :param vocab_type: Possible values are 'LEMMA' and 'STEM'
+    :return: The processed list of training comments, The processed list of test comments
+    """
 
-    # two different lists of stopwords and nltk.corpus stopwords
     # list of stopwordList is larger than nltk.stopwords but does it even matter due to lemmatization
     # common list of stop words taken from https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/feature_extraction/stop_words.py
     stopwordList = ["a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all",
@@ -50,31 +53,36 @@ def create_vocab(comments_train):
                        "whom", "whose", "why", "will", "with", "within", "without", "would", "yet", "you", "your",
                        "yours", "yourself", "yourselves"]
 
-    wordsLem = stopwords.words('english')
 
-    # pass in all the criteria necessary
-    vectorizer = CountVectorizer(stop_words=stopwordList, ngram_range=(1, 2), strip_accents='ascii')
-
-    #preprocess the dataset
+    # Preprocess the dataset bu applying custom replacers
+    print("\t\tApplying custom replacers")
     comments_train = replace_all_for_strong_vocab(comments_train)
-    inputs = get_new_input_comments(comments_train)
-    print("inputs: ", inputs)
 
-    save_cleaned_raw_data("../data/processed_data/processed_train.csv", "../data/raw_data/reddit_train.csv", inputs)
+    # Get the root of each words
+    if vocab_type == "LEMMA":
+        print("\t\tLemmatizing training set")
+        comments_train = lemmatize_comments(comments_train)
+        print("\t\tLemmatizing test set")
+        comments_test = lemmatize_comments(comments_test)
+    elif vocab_type == "STEM":
+        print("\t\tStemming training set")
+        comments_train = stem_comments(comments_train)
+        print("\t\tStemming test set")
+        comments_test = stem_comments(comments_test)
 
-    X = vectorizer.fit_transform(inputs)
-    vocab = vectorizer.get_feature_names()
-    print(vocab)
-    print(X.toarray())
-
-    return vocab, X.toarray
+    return comments_train, comments_test
 
 
-# This method must be called after preprocessing the data input as it will tokenize by words.
-def get_new_input_comments(comments):
+def lemmatize_comments(comments):
+    """
+    Lemmatizes all the words in all the comments
+    :param comments: List of comments to lemmatize
+    :return: List of comments with all the words lemmatized
+    """
 
-    lemmatized_inputs = []
+    lemmatized_comments = []
     lemmatizer = WordNetLemmatizer()
+
     for i in range(len(comments)):
         sentence = []
         for w in nltk.word_tokenize(comments[i]):
@@ -84,12 +92,38 @@ def get_new_input_comments(comments):
             sentence.append(word)
 
         new_sentence = ' '.join(sentence)
-        lemmatized_inputs.append(new_sentence)
-    return lemmatized_inputs
+        lemmatized_comments.append(new_sentence)
+    return lemmatized_comments
+
+
+def stem_comments(comments):
+    """
+    Stems all the words of all the comments
+    :param comments: List of comments to stem
+    :return: List of comments with all the words stemmed
+    """
+
+    stemmed_comments = []
+    port_stemmer = PorterStemmer()
+
+    for i in range(len(comments)):
+        sentence = []
+        for w in nltk.word_tokenize(comments[i]):
+            word = port_stemmer.stem(w)
+            word = reduce_lengthening(word)
+            sentence.append(word)
+
+        new_sentence = ' '.join(sentence)
+        stemmed_comments.append(new_sentence)
+    return stemmed_comments
 
 
 def get_wordnet_pos(word):
-    """Map POS tag to first character lemmatize() accepts"""
+    """
+    Map POS tag to first character lemmatize() accepts
+    :param word: word to get the POS of
+    :return: POS of the word
+    """
     tag = nltk.pos_tag([word])[0][1][0].upper()
     tag_dict = {"J": wordnet.ADJ,
                 "N": wordnet.NOUN,
@@ -116,47 +150,29 @@ def replace_all_for_strong_vocab(comments):
     return comments
 
 
-def replace_youtube_links(sentence):
+def replace_youtube_links(comment):
     youtube_regex = ( r'(https?://)?(www\.)?' '(youtube|youtu|youtube-nocookie)\.(com|be|ca)/' '(watch\?.*?(?=v=)v=|embed/|v/|.+\?v=)?([^&=%\?]{11})' '(\?t=((\d+)h)?((\d{2})m)?((\d{2})s)?)?')
-    return re.sub(youtube_regex, 'youtubelink  ', sentence)
+    return re.sub(youtube_regex, 'youtubelink  ', comment)
 
 
-def replace_url(sentence):
+def replace_url(comment):
     regex = (r'(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')
-    return re.sub(regex, 'internetlink ', sentence)
+    return re.sub(regex, 'internetlink ', comment)
 
 
-def replace_smiley(sentence):
+def replace_smiley(comment):
 
     emoticonFunny = [':)', ':-)', ":')", ':P', ':D', ":'-)"]
     sentence_untokenized = ""
 
     tknzr = TweetTokenizer(strip_handles=False, reduce_len=True, preserve_case=False)
-    commentTokenized = tknzr.tokenize(sentence)
-    # stemming the dataset here
-    commentTokenized = stemming(commentTokenized)
+    commentTokenized = tknzr.tokenize(comment)
 
     for index_word in range(len(commentTokenized)):
         if commentTokenized[index_word] in emoticonFunny:
             commentTokenized[index_word] = "emoticonFunny"
 
         sentence_untokenized = sentence_untokenized + ' ' + commentTokenized[index_word]
-    sentence = sentence_untokenized
+    comment = sentence_untokenized
 
-    return sentence
-
-
-# pass in a list of words and return a list of words with the words stemmed.
-def stemming(commentTokenized):
-
-    list = []
-    ps = PorterStemmer()
-
-    for word in commentTokenized:
-        list.append(ps.stem(word))
-
-    return list
-
-
-if __name__ == "__main__":
-    main()
+    return comment
