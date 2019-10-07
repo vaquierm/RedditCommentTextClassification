@@ -69,6 +69,8 @@ def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
         comments_train = stem_comments(comments_train)
         print("\t\tStemming test set")
         comments_test = stem_comments(comments_test)
+    else:
+        raise Exception("The type of vocabulary " + vocab_type + " is not known")
 
     return comments_train, comments_test
 
