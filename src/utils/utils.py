@@ -131,6 +131,20 @@ def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
     df.to_csv(file_path)
 
 
+def load_processed_data(file_path: str):
+    """
+    Loads the processed data test from the csv file
+    :param file_path: File path of processed data
+    :return: numpy array (Nx1) of id's of comments, List of comments
+    """
+    if not os.path.isfile(file_path):
+        raise Exception("The file " + file_path + " from which you are trying to load your processed data does not exist")
+
+    df = pd.read_csv(file_path)
+    ids = list(df['id'])
+    return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
+
+
 def save_processed_data(X, Y, file_path: str):
     """
     Save the arrays X and Y into a csv file

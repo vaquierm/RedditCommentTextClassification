@@ -73,6 +73,8 @@ def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
         raise Exception("The type of vocabulary " + vocab_type + " is not known")
 
     return comments_train, comments_test
+    # print(vocab)
+    # print(X.toarray())
 
 
 def lemmatize_comments(comments):

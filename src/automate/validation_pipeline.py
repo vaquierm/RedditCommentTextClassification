@@ -2,7 +2,7 @@ import os
 
 from src.config import vocabularies_to_run, models_to_run, raw_data_dir_path, processed_dir_path, results_dir_path
 from sklearn.metrics import confusion_matrix
-from utils.utils import load_raw_training_data, save_results
+from utils.utils import load_raw_training_data, save_results, load_processed_data
 import numpy as np
 import pandas as pd
 
@@ -16,7 +16,6 @@ def run_validation_pipeline():
     # TODO: Implement the validation pipeline
     # Load all the specified vocabularies in Dictionaries, run each model on each dictionary. (The lists of things to run are imported at the top)
     # Generate graphs and txt files for results in the results folder.
-    # https://github.com/vaquierm/RedditCommentTextClassification/issues/6
 
     # fetch true values from train data file
     raw_train_data_file = os.path.join(raw_data_dir_path, "reddit_train.csv")
@@ -24,10 +23,9 @@ def run_validation_pipeline():
 
     for vocabulary in vocabularies_to_run:
         # get the vocab from the processed csv files
-        #TODO: replace the method fetch so we fetch the processed data instead (make a util function for it as well)
-        # comments need to be a numpy array
         # processed_train_data_file = os.path.join(processed_dir_path, vocabulary + "_train_processed.csv")
-        comments = load_raw_training_data(raw_train_data_file)
+        processed_train_data_file = os.path.join(processed_dir_path, "processed_train.csv")
+        comments = load_processed_data(processed_train_data_file)
         accuracies = []
 
         for model in models_to_run:

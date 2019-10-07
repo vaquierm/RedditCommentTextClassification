@@ -29,25 +29,25 @@ def convert_all_raw_data_to_feature_vectors():
                 raise Exception("The type of vectorizer " + vec + " is not known")
 
             # Get the raw data corresponding to this dictionary
-            raw_train_data_path = os.path.join("..", raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
+            raw_train_data_path = os.path.join( raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
             comments, Y = load_raw_training_data(raw_train_data_path)
 
             # Vectorize the training data
             X = vectorizer.fit_transform(comments).toarray()
 
             # Write the feature vectors to the processed data
-            processed_train_data_file = os.path.join("..", processed_dir_path, vocabulary + "_" + vec + "_train_processed.csv")
+            processed_train_data_file = os.path.join( processed_dir_path, vocabulary + "_" + vec + "_train_processed.csv")
             save_processed_data(X, Y, processed_train_data_file)
 
             # Get the raw test data
-            raw_test_data_path = os.path.join("..", raw_data_dir_path, vocabulary + "_test_raw_clean.csv")
+            raw_test_data_path = os.path.join( raw_data_dir_path, vocabulary + "_test_raw_clean.csv")
             ids, comments = load_raw_test_data(raw_test_data_path)
 
             # Convert the data to feature vector
             X = vectorizer.transform(comments).toarray()
 
             # Write the feature vectors to the processed data
-            processed_test_data_file = os.path.join("..", processed_dir_path, vocabulary + "_" + vec + "_test_processed.csv")
+            processed_test_data_file = os.path.join( processed_dir_path, vocabulary + "_" + vec + "_test_processed.csv")
             save_processed_data(X, ids, processed_test_data_file)
 
         print("Done converting all raw data to feature vectors")
