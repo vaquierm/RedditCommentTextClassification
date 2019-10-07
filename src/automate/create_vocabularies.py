@@ -34,9 +34,9 @@ def create_vocabularies():
         comments_train_clean, comments_test_clean = create_vocab(comments_train, comments_test, vocabulary)
 
         # Save both cleaned comment lists to csv files
-        clean_raw_train_path = os.path.join(raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
+        clean_raw_train_path = os.path.join("..", raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
         save_cleaned_raw_data(clean_raw_train_path, train_raw_data_path, comments_train_clean)
-        clean_raw_test_path = os.path.join(raw_data_dir_path, vocabulary + "_test_raw_clean.csv")
+        clean_raw_test_path = os.path.join("..", raw_data_dir_path, vocabulary + "_test_raw_clean.csv")
         save_cleaned_raw_data(clean_raw_test_path, test_raw_data_path, comments_test_clean)
 
 
