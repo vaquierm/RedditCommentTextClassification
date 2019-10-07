@@ -13,5 +13,5 @@ vocabularies_to_run = ["LEMMA", "STEM"]
 # These are all the different vectorizers to run
 vectorizers_to_run = ["BINARY", "TFIDF"]
 
-# These are all the models to run and compare performance on a k fold cross validation
-models_to_run = ["LR", "NB", "DT", "SVM", "SUPER"]
+# These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "DT", "SVM", "SUPER")
+models_to_run = ["LR"]

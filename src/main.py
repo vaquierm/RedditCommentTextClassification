@@ -1,6 +1,5 @@
 import os
 
-from src.automate.create_feature_vectors import convert_all_raw_data_to_feature_vectors
 from src.automate.create_vocabularies import create_vocabularies
 from src.automate.validation_pipeline import run_validation_pipeline
 from src.config import raw_data_dir_path,processed_dir_path,vocabularies_dir_path,results_dir_path
@@ -21,10 +20,6 @@ def main():
     # Create copies of the original raw data by taking into account the lemmatization, feature selection etc
     create_vocabularies()
 
-    # Once the vocabularies are created, convert the raw data to feature vectors and save them into csv format
-    convert_all_raw_data_to_feature_vectors()
-
-    # Once the feature vectors all converted to csv format, load them
     # then run a k-fold validation against each one of them
     # All results produced here will be found in the results folder
     run_validation_pipeline()
