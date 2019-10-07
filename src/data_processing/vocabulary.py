@@ -1,17 +1,12 @@
 # This file contains all functions to related to creating a clean vocabulary
-import os
 import nltk
 import re
-import emoji
 from src.utils.utils import load_raw_training_data
+from src.utils.utils import save_cleaned_raw_data
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
-from nltk.tokenize import sent_tokenize, word_tokenize
-from emoji import UNICODE_EMOJI
-
-# look this up for noo, noooooo, nooooooooo
 from nltk.tokenize import TweetTokenizer
 
 # Lemmatization was compared using diff libraries https://www.machinelearningplus.com/nlp/lemmatization-examples-python/
@@ -19,7 +14,7 @@ from nltk.tokenize import TweetTokenizer
 def main():
     create_vocab()
 
-def create_vocab():
+def create_vocab(comments_train):
 
     # two different lists of stopwords and nltk.corpus stopwords
     # list of stopwordList is larger than nltk.stopwords but does it even matter due to lemmatization
@@ -61,23 +56,22 @@ def create_vocab():
     # pass in all the criteria necessary
     vectorizer = CountVectorizer(stop_words=stopwordList, ngram_range=(1, 2), strip_accents='ascii')
 
-    raw_data_dir_path: str = "../../data/raw_data"
-    train_raw_data_path = os.path.join(raw_data_dir_path, "reddit_train.csv")
-    # Load the raw dataset
-    comments_train, Y_train = load_raw_training_data(train_raw_data_path, convert_subreddits_to_number=False)
-
     # test comments because the list is too long.
-    comments_test = ["lmaooooooooo :) https://youtu.be/6xxbBR8iSZ0?t=40m49s\n\n I loooooove you. If you didn't find it already. connection, connected connecting, cont. \n\nNothing out of the ordinary though, she just has eye constant eye contact. (https://www.reddit.com/r/music/wiki/halloffame)","The striped bats are hanging on their feet for best fishes","oranges are good! :) :') <3 https://www.youtube.com/watch?v=L9Hlj2bawFI", "AHHH, this is soooo coooooooooooooooool", "The dog is running, the cat ran, and the pig runs."]
+    #comments_train = ["lmaooooooooo :) https://youtu.be/6xxbBR8iSZ0?t=40m49s\n\n I loooooove you. If you didn't find it already. connection, connected connecting, cont. \n\nNothing out of the ordinary though, she just has eye constant eye contact. (https://www.reddit.com/r/music/wiki/halloffame)","The striped bats are hanging on their feet for best fishes","oranges are good! :) :') <3 https://www.youtube.com/watch?v=L9Hlj2bawFI", "AHHH, this is soooo coooooooooooooooool", "The dog is running, the cat ran, and the pig runs."]
 
     #preprocess the dataset
-    comments_test = replace_all_for_strong_vocab(comments_test)
-    inputs = get_new_input_comments(comments_test)
+    comments_train = replace_all_for_strong_vocab(comments_train)
+    inputs = get_new_input_comments(comments_train)
     print("inputs: ", inputs)
+
+    save_cleaned_raw_data("../data/processed_data/processed_train.csv", "../data/raw_data/reddit_train.csv", inputs)
 
     X = vectorizer.fit_transform(inputs)
     vocab = vectorizer.get_feature_names()
     print(vocab)
     print(X.toarray())
+
+    return vocab, X.toarray
 
 
 # This method must be called after preprocessing the data input as it will tokenize by words.
