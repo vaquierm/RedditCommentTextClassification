@@ -56,9 +56,6 @@ def create_vocab(comments_train):
     # pass in all the criteria necessary
     vectorizer = CountVectorizer(stop_words=stopwordList, ngram_range=(1, 2), strip_accents='ascii')
 
-    # test comments because the list is too long.
-    #comments_train = ["lmaooooooooo :) https://youtu.be/6xxbBR8iSZ0?t=40m49s\n\n I loooooove you. If you didn't find it already. connection, connected connecting, cont. \n\nNothing out of the ordinary though, she just has eye constant eye contact. (https://www.reddit.com/r/music/wiki/halloffame)","The striped bats are hanging on their feet for best fishes","oranges are good! :) :') <3 https://www.youtube.com/watch?v=L9Hlj2bawFI", "AHHH, this is soooo coooooooooooooooool", "The dog is running, the cat ran, and the pig runs."]
-
     #preprocess the dataset
     comments_train = replace_all_for_strong_vocab(comments_train)
     inputs = get_new_input_comments(comments_train)
@@ -127,7 +124,7 @@ def replace_url(sentence):
 def replace_smiley(sentence):
 
     emoticonFunny = [':)', ':-)', ":')", ':P', ':D', ":'-)"]
-    str = ""
+    sentence_untokenized = ""
 
     tknzr = TweetTokenizer(strip_handles=False, reduce_len=True, preserve_case=False)
     commentTokenized = tknzr.tokenize(sentence)
@@ -139,8 +136,8 @@ def replace_smiley(sentence):
             if commentTokenized[index_word] == emoticonFunny[i]:
                 commentTokenized[index_word] = "emoticonFunny"
 
-        str = str + ' ' + commentTokenized[index_word]
-    sentence = str
+        sentence_untokenized = sentence_untokenized + ' ' + commentTokenized[index_word]
+    sentence = sentence_untokenized
 
     return sentence
 
