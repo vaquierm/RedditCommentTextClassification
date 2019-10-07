@@ -128,3 +128,19 @@ def save_processed_data(X, Y, file_path: str):
     combined = np.hstack((X, Y.reshape((Y.shape[0], 1))))
 
     np.savetxt(file_path, combined, delimiter=',')
+
+
+def save_results(X, Y, file_path: str):
+    """
+    Save the arrays Y into a txt file
+    :param X: X
+    :param Y: Y
+    :param file_path: File to which to save
+    """
+    if not os.path.isdir(os.path.dirname(file_path)):
+        raise Exception("The directory " + os.path.dirname(file_path) + " to which you want to save your results does not exist")
+    if X.shape[0] != Y.shape[0]:
+        raise Exception("The cannot save X len(" + str(X.shape[0]) + ") and Y len(" + str(Y.shape[0]) + ") as they differ in length")
+    combined = np.hstack((X, Y.reshape((Y.shape[0], 1))))
+
+    np.savetxt(file_path, combined, delimiter=',')
