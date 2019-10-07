@@ -114,6 +114,17 @@ def load_raw_test_data(file_path: str):
     return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
 
 
+def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
+    if not os.path.isfile(og_file_path):
+        raise Exception("The file " + og_file_path + " from which you are trying to load your training data does not exist")
+
+    df = pd.read_csv(og_file_path)
+
+    df.loc[:, 'comments'] = pd.Series(comments)
+
+    df.to_csv(file_path)
+
+
 def save_processed_data(X, Y, file_path: str):
     """
     Save the arrays X and Y into a csv file
