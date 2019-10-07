@@ -115,6 +115,12 @@ def load_raw_test_data(file_path: str):
 
 
 def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
+    """
+    Saves the clean raw data after lemmatization
+    :param file_path: The file path to save the new clean raw data
+    :param og_file_path: The file path of the origin al file path
+    :param comments: The list of clean comments
+    """
     if not os.path.isfile(og_file_path):
         raise Exception("The file " + og_file_path + " from which you are trying to load your training data does not exist")
 

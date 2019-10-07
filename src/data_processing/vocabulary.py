@@ -1,7 +1,6 @@
 # This file contains all functions to related to creating a clean vocabulary
 import nltk
 import re
-from src.utils.utils import load_raw_training_data
 from src.utils.utils import save_cleaned_raw_data
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import stopwords, wordnet
@@ -88,6 +87,7 @@ def get_new_input_comments(comments):
         lemmatized_inputs.append(new_sentence)
     return lemmatized_inputs
 
+
 def get_wordnet_pos(word):
     """Map POS tag to first character lemmatize() accepts"""
     tag = nltk.pos_tag([word])[0][1][0].upper()
@@ -98,6 +98,7 @@ def get_wordnet_pos(word):
 
     return tag_dict.get(tag, wordnet.NOUN)
 
+
 def reduce_lengthening(text):
     """
     Replace repeated character sequences of length 3 or greater with sequences
@@ -106,6 +107,7 @@ def reduce_lengthening(text):
     pattern = re.compile(r"(.)\1{2,}")
     return pattern.sub(r"\1\1", text)
 
+
 def replace_all_for_strong_vocab(comments):
     for i in range(len(comments)):
         comments[i] = replace_youtube_links(comments[i])
@@ -113,13 +115,16 @@ def replace_all_for_strong_vocab(comments):
         comments[i] = replace_smiley(comments[i])
     return comments
 
+
 def replace_youtube_links(sentence):
     youtube_regex = ( r'(https?://)?(www\.)?' '(youtube|youtu|youtube-nocookie)\.(com|be|ca)/' '(watch\?.*?(?=v=)v=|embed/|v/|.+\?v=)?([^&=%\?]{11})' '(\?t=((\d+)h)?((\d{2})m)?((\d{2})s)?)?')
     return re.sub(youtube_regex, 'youtubelink  ', sentence)
 
+
 def replace_url(sentence):
     regex = (r'(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')
     return re.sub(regex, 'internetlink ', sentence)
+
 
 def replace_smiley(sentence):
 
@@ -132,14 +137,14 @@ def replace_smiley(sentence):
     commentTokenized = stemming(commentTokenized)
 
     for index_word in range(len(commentTokenized)):
-        for i in range(len(emoticonFunny)):
-            if commentTokenized[index_word] == emoticonFunny[i]:
-                commentTokenized[index_word] = "emoticonFunny"
+        if commentTokenized[index_word] in emoticonFunny:
+            commentTokenized[index_word] = "emoticonFunny"
 
         sentence_untokenized = sentence_untokenized + ' ' + commentTokenized[index_word]
     sentence = sentence_untokenized
 
     return sentence
+
 
 # pass in a list of words and return a list of words with the words stemmed.
 def stemming(commentTokenized):
