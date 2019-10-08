@@ -21,4 +21,4 @@ vocabularies_to_run = ["LEMMA", "STEM"]
 vectorizers_to_run = ["BINARY", "TFIDF"]
 
 # These are all the models to run and compare performance on a k fold cross validation
-models_to_run = [LogisticRegression(), NaiveBayes(), DecisionTreeClassifier(), LinearSVC(), SuperModel()]
+models_to_run = [LogisticRegression(), DecisionTreeClassifier(), LinearSVC(), SuperModel(), NaiveBayes()]

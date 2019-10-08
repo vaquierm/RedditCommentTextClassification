@@ -1,29 +1,22 @@
 import os
+import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, ENGLISH_STOP_WORDS
 from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 
-
-from src.config import raw_data_dir_path, vocabularies_to_run, vectorizers_to_run, models_to_run
+from src.config import raw_data_dir_path, vocabularies_to_run, vectorizers_to_run, models_to_run, results_dir_path
 from src.utils.utils import load_raw_training_data
 
-# Models
-from src.models.SuperModel import SuperModel
-from src.models.NaiveBayes import NaiveBayes
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
 
 # This file contains the automation of converting all the raw data to feature vectors
-
-
 def run_validation_pipeline():
 
     print("\n\nConverting all raw data comments to feature vectors...")
 
     # For each vocabulary, load a dictionary and the corresponding raw data,
-    # Convert it all to a feature vector, and save it to csv in the processed directory
+    # Convert it all to a feature vector, and save it to csv in the processed directory 
+    accuracies = []
     for vocabulary in vocabularies_to_run:
         print("\tConverting raw data with respect to vocabulary: " + vocabulary)
 
@@ -41,40 +34,30 @@ def run_validation_pipeline():
             raw_train_data_path = os.path.join(raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
             X, Y = get_feature_matrix(vectorizer, raw_train_data_path)
 
-            for model_to_run in models_to_run:
-                model = get_model(model_to_run)
-
+            for model in models_to_run:
                 # For each model run kfold validation
                 Y_pred = k_fold_validation(model, X, Y)
 
                 conf_mat = confusion_matrix(Y, Y_pred)
 
                 print(conf_mat)
-                print(accuracy_score(Y, Y_pred))
-
-                # TODO Chloe do the result files stuff here
-
+                accuracy = accuracy_score(Y, Y_pred)
+                print(accuracy)
+                accuracies.append([model, accuracy])
 
         print("Done converting all raw data to feature vectors")
+
+    # TODO Chloe do the result files stuff here
+
+    # save accuracies to txt file
+    df_accuracies = pd.DataFrame(accuracies, columns=['Model', 'Accuracy'])
+    # make a bar graph for each vocab?
+    results_data_file = os.path.join(results_dir_path, "results.txt")
+    # save_results(X, Y, results_data_file)
 
 
 def k_fold_validation(model, X, Y, k: int = 2):
     return cross_val_predict(model, X, Y, cv=k)
-
-
-def get_model(model_name: str):
-    if model_name == "LR":
-        return LogisticRegression(solver='lbfgs', multi_class='auto')
-    elif model_name == "NB":
-        return NaiveBayes()
-    elif model_name == "DT":
-        return DecisionTreeClassifier()
-    elif model_name == "SVM":
-        return SVC(kernel='linear')
-    elif model_name == "SUPER":
-        return SuperModel()
-    else:
-        raise Exception("The model " + model_name + " is not recognized")
 
 
 def get_feature_matrix(vectorizer, raw_data_path: str):
