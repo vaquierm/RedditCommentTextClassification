@@ -1,7 +1,7 @@
 import os
 
-from src.automate.create_vocabularies import create_vocabularies
-from src.automate.validation_pipeline import run_validation_pipeline
+from src.create_vocabularies import create_vocabularies
+from src.validation_pipeline import run_validation_pipeline
 from src.config import raw_data_dir_path,processed_dir_path,vocabularies_dir_path,results_dir_path
 
 
