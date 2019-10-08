@@ -128,7 +128,7 @@ def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
 
     df.loc[:, 'comments'] = pd.Series(comments)
 
-    df.to_csv(file_path)
+    df.to_csv(file_path, mode='w', index=False)
 
 
 def save_processed_data(X, Y, file_path: str):
@@ -145,3 +145,55 @@ def save_processed_data(X, Y, file_path: str):
     combined = np.hstack((X, Y.reshape((Y.shape[0], 1))))
 
     np.savetxt(file_path, combined, delimiter=',')
+
+
+def save_kaggle_results(result_file_path: str, Y):
+    """
+    Save the Kaggle predictions to a file
+    :param result_file_path: File path to save to
+    :param Y: Prediction results Y
+    """
+    if not os.path.isdir(os.path.dirname(result_file_path)):
+        raise Exception("The directory " + os.path.dirname(result_file_path) + " to which you want to save Kaggle predisctions does not exist")
+
+    ids = np.arange(Y.shape[0])
+    Y = list(map(lambda pred: int_to_subreddit[pred], Y))
+
+    # Create a dataframe
+    df = pd.DataFrame({'Id': ids, 'Category': Y})
+
+    # Save to csv
+    df.to_csv(result_file_path, mode='w', index=False)
+
+
+def get_training_feature_matrix(vectorizer, raw_data_path: str):
+    """
+    Get the training feature matrix X and labels Y
+    :param vectorizer: Vectorizer for the string data
+    :param raw_data_path: data path of the raw data
+    :return: X, Y
+    """
+    # Get the raw data corresponding to this dictionary
+    comments, Y = load_raw_training_data(raw_data_path)
+
+    # Vectorize the training data
+    X = vectorizer.fit_transform(comments)
+
+    return X, Y
+
+
+def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool=True):
+    """
+    Get the testing data matrix X
+    :param vectorizer: Vectorizer for the string data
+    :param raw_data_path: data path of the raw data
+    :param fit: If true it will perform a fit transform, otherwise, just a fit
+    :return: X
+    """
+    ids, comments = load_raw_test_data(raw_data_path)
+
+    # Vectorize the comments ad return them
+    if fit:
+        return vectorizer.fit_transform(comments)
+    else:
+        return vectorizer.transform(comments)

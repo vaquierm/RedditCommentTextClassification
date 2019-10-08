@@ -75,3 +75,15 @@ class SuperModel(Model):
             predictions[:, i] = self.models[i].predict(X)
 
         return predictions
+
+    def get_params(self, deep: bool = True):
+        """
+        Get parameters for this estimator.
+        :param deep: If True, will return the parameters for this estimator and contained subobjects that are estimators.
+        :return: Parameter names mapped to their values.
+        """
+        model_params = []
+        for i in range(len(self.models)):
+            model_params.append(self.models[i].get_params(deep))
+
+        return {'models': model_params, 'meta_models': self.meta_model.get_params(deep)}
