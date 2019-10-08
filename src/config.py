@@ -34,4 +34,4 @@ models_to_run = [LR(), NB(), DT(), RF(), SVC(), SuperModel()]
 # Config to run for kaggle
 kaggle_vocab = "LEMMA"
 kaggle_vectorizer = "TFIDF"
-kaggle_model = "LR"
+kaggle_model = LR()
