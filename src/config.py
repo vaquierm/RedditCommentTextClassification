@@ -1,9 +1,10 @@
 # Contains the raw data downloaded from https://www.kaggle.com/c/reddit-comment-classification-comp-551/data
-from models.NaiveBayes import *
-from models.LR import *
-from models.DT import *
-from models.LSVC import *
-from models.SuperModel import *
+from models.DT import DT
+from models.NaiveBayes import NB
+from models.LR import LR
+from models.RF import RF
+from models.SVC import SVC
+from models.SuperModel import SuperModel
 
 
 raw_data_dir_path: str = "../data/raw_data"
@@ -21,7 +22,7 @@ vocabularies_to_run = ["LEMMA"]
 vectorizers_to_run = ["TFIDF"]
 
 # These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "DT", "RF", "SVM", "RF", "SUPER")
-models_to_run = [LogisticRegression(), DecisionTreeClassifier(), LinearSVC(), SuperModel(), NaiveBayes()]
+models_to_run = [LR(), NB(), DT(), RF(), SVC(), SuperModel()]
 
 # Config to run for kaggle
 kaggle_vocab = "LEMMA"

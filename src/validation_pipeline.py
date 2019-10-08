@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score
 
 from src.config import processed_dir_path, vocabularies_to_run, vectorizers_to_run, models_to_run, results_dir_path
 from src.utils.utils import get_training_feature_matrix
-from src.utils.factory import get_vectorizer, get_model
+from src.utils.factory import get_vectorizer
 
 # This file contains the automation of converting all the raw data to feature vectors
 

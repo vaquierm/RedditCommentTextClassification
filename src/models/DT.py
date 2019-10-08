@@ -2,7 +2,7 @@ from src.models.Model import Model
 from sklearn.tree import DecisionTreeClassifier
 
 
-class DecisionTree(Model):
+class DT(Model):
 
     def __init__(self):
         self.clf = DecisionTreeClassifier(random_state=0)

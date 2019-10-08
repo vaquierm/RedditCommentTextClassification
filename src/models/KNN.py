@@ -1,11 +1,11 @@
 from src.models.Model import Model
-from sklearn.svm import LinearSVC
+from sklearn.neighbors import KNeighborsClassifier
 
 
-class LSVC(Model):
+class KNN(Model):
 
     def __init__(self):
-        self.clf = LinearSVC(random_state=0, tol=1e-5)
+        self.clf = KNeighborsClassifier()
 
     def fit(self, X, Y):
         """

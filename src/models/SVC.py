@@ -1,7 +1,11 @@
 from src.models.Model import Model
+from sklearn.svm import SVC as skSVC
 
 
-class NB(Model):
+class SVC(Model):
+
+    def __init__(self):
+        self.clf = skSVC()
 
     def fit(self, X, Y):
         """
@@ -10,9 +14,7 @@ class NB(Model):
         :param Y: Label associated to inputs
         :return: None
         """
-        super().fit(X, Y)
-        # TODO: Marine Implement this
-        # https://github.com/vaquierm/RedditCommentTextClassification/issues/1
+        self.clf.fit(X, Y)
 
     def predict(self, X):
         """
@@ -20,5 +22,4 @@ class NB(Model):
         :param X: Inputs
         :return: The predicted labels based on the training
         """
-        super().predict(X)
-        # TODO: Marine Implement this
+        return self.clf.predict(X)
