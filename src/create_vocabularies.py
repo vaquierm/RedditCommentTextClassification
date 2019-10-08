@@ -1,7 +1,7 @@
 import os
 
 
-from src.config import vocabularies_to_run, vocabularies_dir_path, raw_data_dir_path
+from src.config import vocabularies_to_run, raw_data_dir_path
 from src.utils.utils import load_raw_test_data, load_raw_training_data
 from src.data_processing.vocabulary import create_vocab
 
