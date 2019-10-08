@@ -38,7 +38,7 @@ def run_validation_pipeline():
             else:
                 raise Exception("The type of vectorizer " + vec + " is not known")
 
-            raw_train_data_path = os.path.join("..", raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
+            raw_train_data_path = os.path.join(raw_data_dir_path, vocabulary + "_train_raw_clean.csv")
             X, Y = get_feature_matrix(vectorizer, raw_train_data_path)
 
             for model_to_run in models_to_run:
