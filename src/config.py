@@ -8,9 +8,9 @@ vocabularies_dir_path: str = "../data/vocabularies"
 results_dir_path: str = "../results"
 
 # Vocab token for youtubelink
-token_youtube_link = "youtubelink  "
+token_youtube_link = "youtubelink"
 # Vocab token for internetlink
-token_internet_link = "internetlink "
+token_internet_link = "internetlink"
 # Vocab token for emoticonFunny
 token_emoticon_funny = "emoticonFunny"
 
