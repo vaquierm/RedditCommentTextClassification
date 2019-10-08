@@ -5,6 +5,7 @@ from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 from nltk.tokenize import TweetTokenizer
+from config import token_youtube_link, token_emoticon_funny, token_internet_link
 
 # Lemmatization was compared using diff libraries https://www.machinelearningplus.com/nlp/lemmatization-examples-python/
 
@@ -119,12 +120,12 @@ def replace_all_for_strong_vocab(comments):
 
 def replace_youtube_links(comment):
     youtube_regex = ( r'(https?://)?(www\.)?' '(youtube|youtu|youtube-nocookie)\.(com|be|ca)/' '(watch\?.*?(?=v=)v=|embed/|v/|.+\?v=)?([^&=%\?]{11})' '(\?t=((\d+)h)?((\d{2})m)?((\d{2})s)?)?')
-    return re.sub(youtube_regex, 'youtubelink  ', comment)
+    return re.sub(youtube_regex, token_youtube_link, comment)
 
 
 def replace_url(comment):
     regex = (r'(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$')
-    return re.sub(regex, 'internetlink ', comment)
+    return re.sub(regex, token_internet_link, comment)
 
 
 def replace_smiley(comment):
@@ -137,7 +138,7 @@ def replace_smiley(comment):
 
     for index_word in range(len(commentTokenized)):
         if commentTokenized[index_word] in emoticonFunny:
-            commentTokenized[index_word] = "emoticonFunny"
+            commentTokenized[index_word] = token_emoticon_funny
 
         sentence_untokenized = sentence_untokenized + ' ' + commentTokenized[index_word]
     comment = sentence_untokenized
