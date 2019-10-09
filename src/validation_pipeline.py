@@ -1,5 +1,7 @@
 import os
+import numpy as np
 from sklearn.model_selection import cross_val_predict
+from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 
@@ -11,7 +13,7 @@ from src.utils.factory import get_vectorizer, get_model
 # This file contains the automation of converting all the raw data to feature vectors
 
 
-def run_validation_pipeline():
+def run_validation_pipeline(mutual_info: bool = True):
 
     print("\n\nValidating models against k fold validation...")
 
@@ -28,6 +30,9 @@ def run_validation_pipeline():
 
             raw_train_data_path = os.path.join(processed_dir_path, vocabulary + "_train_clean.csv")
             X, Y = get_training_feature_matrix(vectorizer, raw_train_data_path)
+
+            if mutual_info:
+                X = remove_low_mutual_info_features(X, Y)
 
             for model_to_run in models_to_run:
                 print("\t\t\tRunning k fold validation on model: " + model_to_run)
@@ -48,6 +53,18 @@ def run_validation_pipeline():
 
 def k_fold_validation(model, X, Y, k: int = 5):
     return cross_val_predict(model, X, Y, cv=k)
+
+
+def remove_low_mutual_info_features(X, Y):
+    # Calculate the mutual information
+    print("\t\tCalculating mutual information")
+    mutual_info_scores = mutual_info_classif(X, Y)
+
+    # Get the indicies of features highly correlated
+    highly_correlated_features = (mutual_info_scores > np.median(mutual_info_scores))
+
+    # Only use the features that are highly correlated
+    return X[:, highly_correlated_features]
 
 
 if __name__ == '__main__':
