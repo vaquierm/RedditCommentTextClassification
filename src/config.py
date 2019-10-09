@@ -7,6 +7,13 @@ vocabularies_dir_path: str = "../data/vocabularies"
 # Path to which scripts will dump data
 results_dir_path: str = "../results"
 
+# Vocab token for youtubelink
+token_youtube_link = "youtubelink"
+# Vocab token for internetlink
+token_internet_link = "internetlink"
+# Vocab token for emoticonFunny
+token_emoticon_funny = "emoticonFunny"
+
 # These are all the different dictionary names ("LEMMA", "STEM")
 vocabularies_to_run = ["LEMMA", "STEM"]
 
