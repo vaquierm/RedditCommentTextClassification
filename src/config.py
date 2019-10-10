@@ -20,10 +20,10 @@ vocabularies_to_run = ["LEMMA", "STEM"]
 # These are all the different vectorizers to run ("BINARY", "TFIDF")
 vectorizers_to_run = ["TFIDF", "BINARY"]
 
-# These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "GNB", "KNN", "DT", "RF", "SVM", "RF", "SUPER")
-models_to_run = ["LR", "KNN", "DT", "RF", "SVM", "RF", "SUPER"]
+# These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "MNNB", "KNN", "DT", "RF", "SVM", "SUPER")
+models_to_run = ["RF", "MNNB"]
 
 # Config to run for kaggle
 kaggle_vocab = "LEMMA"
 kaggle_vectorizer = "TFIDF"
-kaggle_model = "LR"
+kaggle_model = "MNNB"

@@ -13,7 +13,7 @@ from src.utils.factory import get_vectorizer, get_model
 # This file contains the automation of converting all the raw data to feature vectors
 
 
-def run_validation_pipeline(mutual_info: bool = True):
+def run_validation_pipeline(mutual_info: bool = False):
 
     print("\n\nValidating models against k fold validation...")
 
@@ -30,6 +30,8 @@ def run_validation_pipeline(mutual_info: bool = True):
 
             raw_train_data_path = os.path.join(processed_dir_path, vocabulary + "_train_clean.csv")
             X, Y = get_training_feature_matrix(vectorizer, raw_train_data_path)
+
+            print("\t\t\tVectorized input has shape: " + str(X.shape))
 
             if mutual_info:
                 X = remove_low_mutual_info_features(X, Y)
