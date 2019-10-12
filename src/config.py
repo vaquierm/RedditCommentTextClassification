@@ -1,9 +1,7 @@
 # Contains the raw data downloaded from https://www.kaggle.com/c/reddit-comment-classification-comp-551/data
 raw_data_dir_path: str = "../data/raw_data"
-# Contains all the data in feature vector form
+# Contains all the cleaned processed raw data
 processed_dir_path: str = "../data/processed_data"
-# Contain csv files of different vocabularies
-vocabularies_dir_path: str = "../data/vocabularies"
 # Path to which scripts will dump data
 results_dir_path: str = "../results"
 
@@ -14,7 +12,10 @@ vocabularies_to_run = ["LEMMA"]
 vectorizers_to_run = ["TFIDF"]
 
 # These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "MNNB", "KNN", "DT", "RF", "SVM", "SUPER")
-models_to_run = ["MNNB", "LR", "SVM", "RF", "DT"]
+models_to_run = ["MNNB", "LR", "SVM"]
+
+# If this is true, run gridsearch on each model (This will significantly increase the runtime of the validation pipeline for model types that support gridsearch)
+run_grid_search = True
 
 # Config to run for kaggle
 kaggle_vocab = "LEMMA"
