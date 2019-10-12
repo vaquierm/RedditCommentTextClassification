@@ -44,9 +44,7 @@ def run_validation_pipeline(mutual_info: bool = False):
                 Y_pred = k_fold_validation(model, X, Y)
 
                 conf_mat = confusion_matrix(Y, Y_pred)
-
-                print(conf_mat)
-                print(accuracy_score(Y, Y_pred))
+                print("\t\t\t\tAccuracy of model " + model_to_run + ": ", accuracy_score(Y, Y_pred))
 
                 # TODO Chloe do the result files stuff here
 
