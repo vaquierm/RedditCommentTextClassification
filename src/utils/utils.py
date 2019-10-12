@@ -114,7 +114,7 @@ def load_raw_test_data(file_path: str):
     return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
 
 
-def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
+def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list, additional_features: dict = {}):
     """
     Saves the clean raw data after lemmatization
     :param file_path: The file path to save the new clean raw data
@@ -127,6 +127,12 @@ def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
     df = pd.read_csv(og_file_path)
 
     df.loc[:, 'comments'] = pd.Series(comments)
+
+    listOfAdditionalFeatures = list(additional_features.items())
+
+    for i in range(len(additional_features.keys())):
+        feature = listOfAdditionalFeatures[i]
+        df.loc[:, feature[0]] = pd.Series(feature[1])
 
     df.to_csv(file_path, mode='w', index=False)
 

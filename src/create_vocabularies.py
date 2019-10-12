@@ -4,6 +4,7 @@ import os
 from src.config import vocabularies_to_run, raw_data_dir_path, processed_dir_path
 from src.utils.utils import load_raw_test_data, load_raw_training_data
 from src.data_processing.vocabulary import create_vocab
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, ENGLISH_STOP_WORDS
 
 from src.utils.utils import save_cleaned_raw_data
 
@@ -31,14 +32,13 @@ def create_vocabularies():
         print("\tCreating vocabulary: " + vocabulary)
 
         # Create the vocabs
-        comments_train_clean, comments_test_clean = create_vocab(comments_train, comments_test, vocabulary)
+        comments_train_clean, comments_test_clean, additional_features_train, additional_features_test = create_vocab(comments_train, comments_test, vocabulary)
 
         # Save both cleaned comment lists to csv files
         clean_raw_train_path = os.path.join(processed_dir_path, vocabulary + "_train_clean.csv")
-        save_cleaned_raw_data(clean_raw_train_path, train_raw_data_path, comments_train_clean)
+        save_cleaned_raw_data(clean_raw_train_path, train_raw_data_path, comments_train_clean, additional_features_train)
         clean_raw_test_path = os.path.join(processed_dir_path, vocabulary + "_test_clean.csv")
-        save_cleaned_raw_data(clean_raw_test_path, test_raw_data_path, comments_test_clean)
-
+        save_cleaned_raw_data(clean_raw_test_path, test_raw_data_path, comments_test_clean, additional_features_test)
 
 if __name__ == '__main__':
     create_vocabularies()
