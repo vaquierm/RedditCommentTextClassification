@@ -1,4 +1,6 @@
+import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, ENGLISH_STOP_WORDS
+from sklearn.model_selection import GridSearchCV
 from src.models.SuperModel import SuperModel
 from src.models.NaiveBayes import NaiveBayes
 from sklearn.linear_model import LogisticRegression
@@ -19,21 +21,41 @@ def get_vectorizer(vectorizer_name):
     else:
         raise Exception("The type of vectorizer " + vectorizer_name + " is not known")
 
-def get_model(model_name: str):
+
+def get_model(model_name: str, grid_search: bool = False):
     if model_name == "LR":
-        return LogisticRegression(solver='lbfgs', multi_class='auto')
+        if not grid_search:
+            return LogisticRegression(multi_class='auto', solver='lbfgs', C=1.623776739188721, max_iter=200)
+        else:
+            param_grid = {
+                 'C': np.logspace(-4, 4, 20),
+                 'solver': ['saga', 'lbfgs']}
+            return GridSearchCV(LogisticRegression(multi_class='auto'), param_grid, cv=5)
     elif model_name == "NB":
         return NaiveBayes()
     elif model_name == "MNNB":
-        return MultinomialNB()
+        if not grid_search:
+            return MultinomialNB(alpha=0.28)
+        else:
+            param_grid = {
+                'alpha': np.arange(0.1, 0.5, 0.01).tolist()
+            }
+            return GridSearchCV(MultinomialNB(), param_grid, cv=5)
     elif model_name == "KNN":
         return KNeighborsClassifier()
     elif model_name == "DT":
         return DecisionTreeClassifier()
     elif model_name == "RF":
-        return RandomForestClassifier(n_estimators=1000, random_state=0, class_weight='balanced')
+        return RandomForestClassifier(n_estimators=500, random_state=0, class_weight='balanced')
     elif model_name == "SVM":
-        return SVC(kernel='linear', decision_function_shape='ovr', class_weight='balanced')
+        if not grid_search:
+            return SVC(kernel='linear', decision_function_shape='ovr', class_weight='balanced')
+        else:
+            param_grid = {
+                'kernel': ('linear', 'rbf'),
+                'C': [1, 10]
+            }
+            return GridSearchCV(SVC(decision_function_shape='ovr', class_weight='balanced'), param_grid, cv=5)
     elif model_name == "SUPER":
         return SuperModel()
     else:

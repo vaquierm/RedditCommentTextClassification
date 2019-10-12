@@ -6,7 +6,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 
 
-from src.config import processed_dir_path, vocabularies_to_run, vectorizers_to_run, models_to_run
+from src.config import processed_dir_path, vocabularies_to_run, vectorizers_to_run, models_to_run, run_grid_search
 from src.utils.utils import get_training_feature_matrix
 from src.utils.factory import get_vectorizer, get_model
 
@@ -37,11 +37,20 @@ def run_validation_pipeline(mutual_info: bool = False):
                 X = remove_low_mutual_info_features(X, Y)
 
             for model_to_run in models_to_run:
-                print("\t\t\tRunning k fold validation on model: " + model_to_run)
-                model = get_model(model_to_run)
+                model = get_model(model_to_run, run_grid_search)
 
-                # For each model run kfold validation
-                Y_pred = k_fold_validation(model, X, Y)
+                if not run_grid_search or not 'GridSearch' in str(type(model)):
+                    print("\t\t\tRunning k fold validation on model: " + model_to_run)
+                    # For each model run kfold validation
+                    Y_pred = k_fold_validation(model, X, Y)
+                else:
+                    print("\t\t\tRunning grid search on model: " + model_to_run)
+                    # If we want to run gridsearh
+                    model.fit(X, Y)
+
+                    print("\t\t\tThe best parameters for model: " + model_to_run + " are ", model.best_params_)
+                    print("\t\t\tRunning k fold validation with the best model")
+                    Y_pred = k_fold_validation(model.best_estimator_, X, Y)
 
                 conf_mat = confusion_matrix(Y, Y_pred)
                 print("\t\t\t\tAccuracy of model " + model_to_run + ": ", accuracy_score(Y, Y_pred))
