@@ -13,7 +13,7 @@ from src.utils.factory import get_vectorizer, get_model
 # This file contains the automation of converting all the raw data to feature vectors
 
 
-def run_validation_pipeline(mutual_info: bool = False, linear_correlation: bool = True):
+def run_validation_pipeline(linear_correlation: bool = True):
 
     print("\n\nValidating models against k fold validation...")
 
@@ -32,10 +32,6 @@ def run_validation_pipeline(mutual_info: bool = False, linear_correlation: bool 
             X, Y = get_training_feature_matrix(vectorizer, raw_train_data_path)
 
             print("\t\tVectorized input has shape: " + str(X.shape))
-
-            if mutual_info:
-                X = remove_low_mutual_info_features(X, Y)
-                print("\t\tThe new vectorized input has shape: " + str(X.shape))
 
             if linear_correlation:
                 X = remove_low_correlation_features(X, Y)
@@ -86,8 +82,9 @@ def remove_low_correlation_features(X, Y):
     print("\t\tCalculating F score")
     p_scores = f_classif(X, Y)[1]
 
+    p_scores = np.log(X.getnnz(axis=0)) * p_scores
     # Get indicies of high p_score features
-    high_pscores = (p_scores.mean() + 1.2 * p_scores.std()) > p_scores
+    high_pscores = (p_scores.mean() - 0.4 * p_scores.std()) > p_scores
 
     return X[:, high_pscores]
 
