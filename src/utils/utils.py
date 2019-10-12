@@ -114,12 +114,13 @@ def load_raw_test_data(file_path: str):
     return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
 
 
-def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list, additional_features: dict = {}):
+def save_cleaned_raw_data(file_path: str, og_file_path: str, comments: list, additional_features: dict = {}):
     """
     Saves the clean raw data after lemmatization
     :param file_path: The file path to save the new clean raw data
     :param og_file_path: The file path of the origin al file path
     :param comments: The list of clean comments
+    :param additional_features: Represents the custom additional features to be saved
     """
     if not os.path.isfile(og_file_path):
         raise Exception("The file " + og_file_path + " from which you are trying to load your training data does not exist")
@@ -128,11 +129,8 @@ def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list, addi
 
     df.loc[:, 'comments'] = pd.Series(comments)
 
-    listOfAdditionalFeatures = list(additional_features.items())
-
-    for i in range(len(additional_features.keys())):
-        feature = listOfAdditionalFeatures[i]
-        df.loc[:, feature[0]] = pd.Series(feature[1])
+    for feature in additional_features.keys():
+        df[feature] = additional_features[feature]
 
     df.to_csv(file_path, mode='w', index=False)
 
