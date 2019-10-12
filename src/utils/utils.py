@@ -1,6 +1,7 @@
 import csv
 import pandas as pd
 import numpy as np
+from scipy.sparse import hstack
 import os
 
 
@@ -52,6 +53,7 @@ int_to_subreddit = {
     19: 'wow',
 }
 
+
 def csv_to_python_list(file_path: str):
     """
     Reads a csv file and puts it into a python list
@@ -79,11 +81,12 @@ def python_list_to_csv(file_path: str, list_data: list):
         writer.writerows(list_data)
 
 
-def load_raw_training_data(file_path: str, convert_subreddits_to_number: bool = True):
+def load_raw_training_data(file_path: str, convert_subreddits_to_number: bool = True, get_additional_features: bool = False):
     """
     Loads the raw training data from the csv file
     :param file_path: File path of raw data
     :param convert_subreddits_to_number: If true, converts all subreddits to a number corresponding to its class
+    :param get_additional_features: If true, will also return a dictionary containing all additional features as vertical numpy arrays
     :return: List of comments, (List of associated subreddits or numpy array of numbers corresponding to the subreddits)
     """
     if not os.path.isfile(file_path):
@@ -97,13 +100,17 @@ def load_raw_training_data(file_path: str, convert_subreddits_to_number: bool = 
         subreddits = map(lambda x: subreddit_to_int[x], subreddits)
         subreddits = np.array(list(subreddits))
 
-    return list(df['comments']), subreddits
+    if not get_additional_features:
+        return list(df['comments']), subreddits
+    else:
+        return list(df['comments']), subreddits, get_additional_feature_arrays(df)
 
 
-def load_raw_test_data(file_path: str):
+def load_raw_test_data(file_path: str, get_additional_features: bool = False):
     """
     Loads the raw data test from the csv file
     :param file_path: File path of raw data
+    :param get_additional_features: If true, will also return a dictionary containing all additional features as vertical numpy arrays
     :return: numpy array (Nx1) of id's of comments, List of comments
     """
     if not os.path.isfile(file_path):
@@ -111,15 +118,45 @@ def load_raw_test_data(file_path: str):
 
     df = pd.read_csv(file_path)
     ids = list(df['id'])
-    return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
+
+    if not get_additional_features:
+        return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
+    else:
+        return np.array(ids).reshape((len(ids), 1)), list(df['comments']), get_additional_feature_arrays(df)
 
 
-def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list, additional_features: dict = {}):
+def get_additional_feature_arrays(df):
+    """
+    Get all features that were added to the processed raw data
+    :param df: Dataframe
+    :return: Dictionary of 'feature_name' -> vertical np array or feature
+    """
+    features = list(df.columns.values)
+
+    additional_features = {}
+    for feature in features:
+        if feature == 'id' or feature == 'subreddits' or feature == 'comments':
+            continue
+        additional_features[feature] = np.array(list(df[feature])).reshape((df.shape[0], 1))
+
+        # If contains negatives (range between -1 and 1) normalize between 0 and 1
+        if additional_features[feature].min() < 0:
+            additional_features[feature] = (additional_features[feature] + 1) / 4
+
+        # If contains features greater than 1 (ex: word length etc, normalize)
+        elif additional_features[feature].max() > 1:
+            additional_features[feature] = (additional_features[feature] - 1) / ((additional_features[feature].max() - 1) * 10)
+
+    return additional_features
+
+
+def save_cleaned_raw_data(file_path: str, og_file_path: str, comments: list, additional_features: dict = {}):
     """
     Saves the clean raw data after lemmatization
     :param file_path: The file path to save the new clean raw data
     :param og_file_path: The file path of the origin al file path
     :param comments: The list of clean comments
+    :param additional_features: Represents the custom additional features to be saved
     """
     if not os.path.isfile(og_file_path):
         raise Exception("The file " + og_file_path + " from which you are trying to load your training data does not exist")
@@ -128,11 +165,8 @@ def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list, addi
 
     df.loc[:, 'comments'] = pd.Series(comments)
 
-    listOfAdditionalFeatures = list(additional_features.items())
-
-    for i in range(len(additional_features.keys())):
-        feature = listOfAdditionalFeatures[i]
-        df.loc[:, feature[0]] = pd.Series(feature[1])
+    for feature in additional_features.keys():
+        df[feature] = additional_features[feature]
 
     df.to_csv(file_path, mode='w', index=False)
 
@@ -180,15 +214,23 @@ def get_training_feature_matrix(vectorizer, raw_data_path: str):
     :return: X, Y
     """
     # Get the raw data corresponding to this dictionary
-    comments, Y = load_raw_training_data(raw_data_path)
+    comments, Y, additional_features = load_raw_training_data(raw_data_path, get_additional_features=True)
 
     # Vectorize the training data
     X = vectorizer.fit_transform(comments)
 
+    feature_arrays = []
+    for feature in additional_features.keys():
+        feature_arrays.append(additional_features[feature])
+
+    feature_arrays.insert(0, X)
+
+    X = hstack(feature_arrays).tocsr()
+
     return X, Y
 
 
-def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool=True):
+def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool = True):
     """
     Get the testing data matrix X
     :param vectorizer: Vectorizer for the string data
@@ -196,10 +238,18 @@ def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool=True):
     :param fit: If true it will perform a fit transform, otherwise, just a fit
     :return: X
     """
-    ids, comments = load_raw_test_data(raw_data_path)
+    ids, comments, additional_features = load_raw_test_data(raw_data_path, get_additional_features=True)
 
     # Vectorize the comments ad return them
     if fit:
-        return vectorizer.fit_transform(comments)
+        X = vectorizer.fit_transform(comments)
     else:
-        return vectorizer.transform(comments)
+        X = vectorizer.transform(comments)
+
+    feature_arrays = []
+    for feature in additional_features.keys():
+        feature_arrays.append(additional_features[feature])
+
+    feature_arrays.insert(0, X)
+
+    return hstack(feature_arrays).tocsr()

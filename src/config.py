@@ -8,13 +8,13 @@ vocabularies_dir_path: str = "../data/vocabularies"
 results_dir_path: str = "../results"
 
 # These are all the different dictionary names ("LEMMA", "STEM")
-vocabularies_to_run = ["LEMMA", "STEM"]
+vocabularies_to_run = ["LEMMA"]
 
 # These are all the different vectorizers to run ("BINARY", "TFIDF")
-vectorizers_to_run = ["TFIDF", "BINARY"]
+vectorizers_to_run = ["TFIDF"]
 
 # These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "MNNB", "KNN", "DT", "RF", "SVM", "SUPER")
-models_to_run = ["RF", "MNNB"]
+models_to_run = ["MNNB", "LR", "SVM", "RF", "DT"]
 
 # Config to run for kaggle
 kaggle_vocab = "LEMMA"
