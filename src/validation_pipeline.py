@@ -49,7 +49,8 @@ def run_validation_pipeline(mutual_info: bool = False):
                     model.fit(X, Y)
 
                     print("\t\t\tThe best parameters for model: " + model_to_run + " are ", model.best_params_)
-                    Y_pred = model.predict(X)
+                    print("\t\t\tRunning k fold validation with the best model")
+                    Y_pred = k_fold_validation(model.best_estimator_, X, Y)
 
                 conf_mat = confusion_matrix(Y, Y_pred)
                 print("\t\t\t\tAccuracy of model " + model_to_run + ": ", accuracy_score(Y, Y_pred))

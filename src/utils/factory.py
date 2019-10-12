@@ -25,7 +25,7 @@ def get_vectorizer(vectorizer_name):
 def get_model(model_name: str, grid_search: bool = False):
     if model_name == "LR":
         if not grid_search:
-            return LogisticRegression(multi_class='auto')
+            return LogisticRegression(multi_class='auto', solver='lbfgs', C=1.623776739188721, max_iter=200)
         else:
             param_grid = {
                  'C': np.logspace(-4, 4, 20),
@@ -34,7 +34,13 @@ def get_model(model_name: str, grid_search: bool = False):
     elif model_name == "NB":
         return NaiveBayes()
     elif model_name == "MNNB":
-        return MultinomialNB()
+        if not grid_search:
+            return MultinomialNB(alpha=0.28)
+        else:
+            param_grid = {
+                'alpha': np.arange(0.1, 0.5, 0.01).tolist()
+            }
+            return GridSearchCV(MultinomialNB(), param_grid, cv=5)
     elif model_name == "KNN":
         return KNeighborsClassifier()
     elif model_name == "DT":
