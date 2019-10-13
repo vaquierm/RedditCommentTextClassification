@@ -13,10 +13,10 @@ from sklearn.naive_bayes import MultinomialNB
 
 def get_vectorizer(vectorizer_name):
     if vectorizer_name == "BINARY":
-        return CountVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
+        return CountVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 2),
                                      strip_accents='ascii', binary=True)
     elif vectorizer_name == "TFIDF":
-        return TfidfVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
+        return TfidfVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 2),
                                      strip_accents='ascii')
     else:
         raise Exception("The type of vectorizer " + vectorizer_name + " is not known")
@@ -38,7 +38,7 @@ def get_model(model_name: str, grid_search: bool = False):
             return MultinomialNB(alpha=0.28)
         else:
             param_grid = {
-                'alpha': np.arange(0.1, 0.5, 0.01).tolist()
+                'alpha': np.arange(0.0001, 0.002, 0.0001).tolist()
             }
             return GridSearchCV(MultinomialNB(), param_grid, cv=5)
     elif model_name == "KNN":

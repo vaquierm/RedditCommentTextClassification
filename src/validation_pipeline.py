@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from sklearn.model_selection import cross_val_predict
-from sklearn.feature_selection import mutual_info_classif
+from sklearn.feature_selection import mutual_info_classif, f_classif
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 
@@ -13,7 +13,7 @@ from src.utils.factory import get_vectorizer, get_model
 # This file contains the automation of converting all the raw data to feature vectors
 
 
-def run_validation_pipeline(mutual_info: bool = False):
+def run_validation_pipeline(linear_correlation: bool = False):
 
     print("\n\nValidating models against k fold validation...")
 
@@ -31,10 +31,11 @@ def run_validation_pipeline(mutual_info: bool = False):
             raw_train_data_path = os.path.join(processed_dir_path, vocabulary + "_train_clean.csv")
             X, Y = get_training_feature_matrix(vectorizer, raw_train_data_path)
 
-            print("\t\t\tVectorized input has shape: " + str(X.shape))
+            print("\t\tVectorized input has shape: " + str(X.shape))
 
-            if mutual_info:
-                X = remove_low_mutual_info_features(X, Y)
+            if linear_correlation:
+                X = remove_low_correlation_features(X, Y)
+                print("\t\tThe new vectorized input has shape: " + str(X.shape))
 
             for model_to_run in models_to_run:
                 model = get_model(model_to_run, run_grid_search)
@@ -74,6 +75,21 @@ def remove_low_mutual_info_features(X, Y):
 
     # Only use the features that are highly correlated
     return X[:, highly_correlated_features]
+
+
+def remove_low_correlation_features(X, Y, return_index_array: bool = False):
+    # Calculate the correlation of input to output
+    print("\t\tCalculating F score")
+    p_scores = f_classif(X, Y)[1]
+
+    p_scores = np.log(X.getnnz(axis=0)) * p_scores
+    # Get indicies of high p_score features
+    high_pscores = (p_scores.mean() - 0.4 * p_scores.std()) > p_scores
+
+    if not return_index_array:
+        return X[:, high_pscores]
+    else:
+        return X[:, high_pscores], high_pscores
 
 
 if __name__ == '__main__':
