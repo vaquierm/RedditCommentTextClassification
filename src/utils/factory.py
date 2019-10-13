@@ -38,7 +38,7 @@ def get_model(model_name: str, grid_search: bool = False):
             return MultinomialNB(alpha=0.28)
         else:
             param_grid = {
-                'alpha': np.arange(0.05, 0.5, 0.01).tolist()
+                'alpha': np.arange(0.0001, 0.002, 0.0001).tolist()
             }
             return GridSearchCV(MultinomialNB(), param_grid, cv=5)
     elif model_name == "KNN":

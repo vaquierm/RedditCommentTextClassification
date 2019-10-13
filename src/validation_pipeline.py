@@ -13,7 +13,7 @@ from src.utils.factory import get_vectorizer, get_model
 # This file contains the automation of converting all the raw data to feature vectors
 
 
-def run_validation_pipeline(linear_correlation: bool = True):
+def run_validation_pipeline(linear_correlation: bool = False):
 
     print("\n\nValidating models against k fold validation...")
 
@@ -77,7 +77,7 @@ def remove_low_mutual_info_features(X, Y):
     return X[:, highly_correlated_features]
 
 
-def remove_low_correlation_features(X, Y):
+def remove_low_correlation_features(X, Y, return_index_array: bool = False):
     # Calculate the correlation of input to output
     print("\t\tCalculating F score")
     p_scores = f_classif(X, Y)[1]
@@ -86,7 +86,10 @@ def remove_low_correlation_features(X, Y):
     # Get indicies of high p_score features
     high_pscores = (p_scores.mean() - 0.4 * p_scores.std()) > p_scores
 
-    return X[:, high_pscores]
+    if not return_index_array:
+        return X[:, high_pscores]
+    else:
+        return X[:, high_pscores], high_pscores
 
 
 if __name__ == '__main__':
