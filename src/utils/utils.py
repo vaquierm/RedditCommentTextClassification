@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
 
 # This file contains any util functions needed across the project.
@@ -176,6 +177,7 @@ def create_results_file(file_path: str):
         open(file_path, 'w+').close()
     open(file_path, 'w').close()
 
+
 def append_results(entry, file_path: str):
     """
     Save the results of each model into a txt file
@@ -184,8 +186,8 @@ def append_results(entry, file_path: str):
     """
     if not os.path.isdir(os.path.dirname(file_path)):
         raise Exception("The directory " + os.path.dirname(file_path) + " to which you want to save your results does not exist")
-    f = open(entry, "a+")
-    f.write(entry)
+    f = open(file_path, "a+")
+    f.write(entry + "\n")
     f.close()
 
 def save_kaggle_results(result_file_path: str, Y):
@@ -221,6 +223,47 @@ def get_training_feature_matrix(vectorizer, raw_data_path: str):
     X = vectorizer.fit_transform(comments)
 
     return X, Y
+
+
+def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_values=True):
+    """
+    :param confusion_matrix: matrix to graph
+    :param title: title of the graph
+    :param classes: classes Y
+    :param file_path: path to save to
+    :param show_values: insert exact value of the matrix in each cell
+    """
+    fig, ax = plt.subplots()
+    im = ax.imshow(confusion_matrix, interpolation='nearest', cmap=plt.cm.Blues)
+    ax.figure.colorbar(im, ax=ax)
+
+    ax.set(xticks=np.arange(confusion_matrix.shape[1]),
+           yticks=np.arange(confusion_matrix.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title,
+           ylabel='True label',
+           xlabel='Predicted label')
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+    # change size
+    fig.set_size_inches(10, 10)
+
+    # Loop over data dimensions and create text annotations.
+    if show_values:
+        thresh = confusion_matrix.max() / 2.
+        for i in range(confusion_matrix.shape[0]):
+            for j in range(confusion_matrix.shape[1]):
+                ax.text(j, i, format(confusion_matrix[i, j], "d"),
+                        ha="center", va="center",
+                        color="white" if confusion_matrix[i, j] > thresh else "black")
+    fig.tight_layout()
+
+    # save to file
+    plt.show()
+    fig.savefig(file_path, bbox_inches='tight')
 
 
 def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool=True):

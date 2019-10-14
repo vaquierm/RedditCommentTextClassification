@@ -5,10 +5,10 @@ from sklearn.model_selection import cross_val_predict
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
-
+from sklearn.utils.multiclass import unique_labels
 
 from src.config import processed_dir_path, vocabularies_to_run, vectorizers_to_run, models_to_run, results_dir_path
-from src.utils.utils import get_training_feature_matrix, append_results, create_results_file
+from src.utils.utils import get_training_feature_matrix, append_results, create_results_file, save_confusion_matrix
 from src.utils.factory import get_vectorizer, get_model
 
 
@@ -17,12 +17,12 @@ from src.utils.factory import get_vectorizer, get_model
 
 def run_validation_pipeline(mutual_info: bool = False):
 
+    results_data_file = os.path.join(results_dir_path, "results.txt")
+
     print("\n\nValidating models against k fold validation...")
 
     # For each vocabulary, load a dictionary and the corresponding raw data,
     # Convert it all to a feature vector, and save it to csv in the processed directory
-    accuracies = []
-    results_data_file = os.path.join(results_dir_path, "results.txt")
     create_results_file(results_data_file)
     for vocabulary in vocabularies_to_run:
         print("\tValidation models for vocabulary: " + vocabulary)
@@ -51,18 +51,20 @@ def run_validation_pipeline(mutual_info: bool = False):
                 # For each model run kfold validation
                 Y_pred = k_fold_validation(model, X, Y)
 
+                # get confusion matrix and save to png
                 conf_mat = confusion_matrix(Y, Y_pred)
+                results_confusion_matrix_file = os.path.join(results_dir_path, vocabulary + "_"+ vec + "confusion.png")
+                save_confusion_matrix(conf_mat, "Confusion Matrix for vocabulary " + vocabulary + " and vectorizer " + vec, unique_labels(Y_pred, Y), results_confusion_matrix_file)
 
-                print(conf_mat)
+                # get accuracy
                 accuracy = accuracy_score(Y, Y_pred)
-                print(accuracy)
-                append_results(model + ": " + accuracy, results_data_file)
+                append_results(model.__class__.__name__ + ": " + str(accuracy), results_data_file)
+
+            # save the accuracies of vocab for each model???
+            # save_accuracy_bargraph(accuracies)
 
         print("Validation on all models")
 
-    # save accuracies to txt file
-    df_accuracies = pd.DataFrame(accuracies, columns=['Model', 'Accuracy'])
-    # make a bar graph for each vocab?
 
 
 def k_fold_validation(model, X, Y, k: int = 5):
