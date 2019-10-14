@@ -5,6 +5,8 @@ from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
 from nltk.tokenize import TweetTokenizer, RegexpTokenizer
+from nltk.sentiment import SentimentIntensityAnalyzer
+
 
 # Vocab token for youtubelink
 token_youtube_link = "youtubelink"
@@ -16,6 +18,7 @@ token_emoticon_funny = "emoticonFunny"
 token_year1900 = "year1900"
 token_year2000 = "year2000"
 
+
 def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
     """
     Creates a vocabulary from the training set of comments.
@@ -26,22 +29,14 @@ def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
     :return: The processed list of training comments, The processed list of test comments
     """
 
-    additional_features_train = {}
-    additional_features_test = {}
+    # Get additional features from the data
+    print("\t\tGet custom additional features")
+    additional_features_train, additional_features_test = compute_additional_features(comments_train, comments_test)
 
-    # Preprocess the dataset bu applying custom replacers
-    print("\t\ttrain: Get comment length and average word length in the comment")
-    comments_length_train, average_word_length_train = lenghtOfComments(comments_train)
-    additional_features_train.update({'comment_length': comments_length_train})
-    additional_features_train.update({'average_word_length': average_word_length_train})
-
+    # Ally custom replacers to clean up some of the data
     print("\t\tApplying custom replacers")
     comments_train = replace_all_for_strong_vocab(comments_train)
-
-    print("\t\tTest: Get comment length and average word length in the comment")
-    comments_length_test, average_word_length_test = lenghtOfComments(comments_test)
-    additional_features_test.update({'comment_length': comments_length_test})
-    additional_features_test.update({'average_word_length': average_word_length_test})
+    comments_test = replace_all_for_strong_vocab(comments_test)
 
     # Get the root of each words
     if vocab_type == "LEMMA":
@@ -60,6 +55,31 @@ def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
     return comments_train, comments_test, additional_features_train, additional_features_test
     # print(vocab)
     # print(X.toarray())
+
+
+def compute_additional_features(comments_train, comments_test):
+    """
+    Computes additional features that could increase the accuracy of classification
+    :param comments_train: All training comments
+    :param comments_test: All test comments
+    :return: Two Dictionaries containing all additional features for training and testing respectively
+    """
+    additional_features_train = {}
+    additional_features_test = {}
+
+    print("\t\t\tComputing the comment length and the average word length for each comment")
+    comments_length_train, average_word_length_train = length_of_comments(comments_train)
+    additional_features_train['comment_length'] = comments_length_train
+    additional_features_train['average_word_length'] = average_word_length_train
+    comments_length_test, average_word_length_test = length_of_comments(comments_test)
+    additional_features_test['comment_length'] = comments_length_test
+    additional_features_test['average_word_length'] = average_word_length_test
+
+    print("\t\t\tComputing the overall sentiment of each comment")
+    additional_features_train['sentiment'] = compute_sentiment_of_comments(comments_train)
+    additional_features_test['sentiment'] = compute_sentiment_of_comments(comments_test)
+
+    return additional_features_train, additional_features_test
 
 
 def lemmatize_comments(comments):
@@ -131,7 +151,7 @@ def reduce_lengthening(text):
     return pattern.sub(r"\1\1", text)
 
 
-def lenghtOfComments(comments):
+def length_of_comments(comments):
     tokenizer = RegexpTokenizer(r'\w+')
     lengthOfComments = []
     averageLengthOfWords = []
@@ -143,10 +163,15 @@ def lenghtOfComments(comments):
         for k in range(len(tokened_sentence)):
             lengthOfWord = len(tokened_sentence[k])
             sum += lengthOfWord
-        average = round(sum/len(tokened_sentence), 0)
+        average = round(sum/len(tokened_sentence), 3)
         averageLengthOfWords.append(average)
 
     return lengthOfComments, averageLengthOfWords
+
+
+def compute_sentiment_of_comments(comments):
+    vader_analyzer = SentimentIntensityAnalyzer()
+    return list(map(lambda comment: vader_analyzer.polarity_scores(comment)['compound'], comments))
 
 
 def replace_all_for_strong_vocab(comments):
