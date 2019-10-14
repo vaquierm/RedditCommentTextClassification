@@ -230,6 +230,33 @@ def get_training_feature_matrix(vectorizer, raw_data_path: str):
     return X, Y
 
 
+def get_training_feature_matrix_folds(vectorizer, raw_data_path: str, folds: int = 5):
+    # Get the raw data corresponding to this dictionary
+    comments, Y, additional_features = load_raw_training_data(raw_data_path, get_additional_features=True)
+
+    fold_length = int(len(comments)/folds)
+
+    X_trains = []
+    Y_trains = []
+    X_tests = []
+    Y_tests = []
+
+    for i in range(folds):
+        print("\t\t\tVectorizing fold ", i)
+        split = np.arange(len(comments))
+        split = np.logical_or(split < (i * fold_length), split >= ((i+1) * fold_length))
+        train_comments = comments[0:i * fold_length] + comments[(i+1) * fold_length:len(comments)]
+        test_comments = comments[i * fold_length:(i+1) * fold_length]
+
+        X_trains.append(vectorizer.fit_transform(train_comments))
+        X_tests.append(vectorizer.transform(test_comments))
+
+        Y_trains.append(Y[split])
+        Y_tests.append(Y[np.logical_not(split)])
+
+    return X_trains, X_tests, Y_trains, Y_tests
+
+
 def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool = True):
     """
     Get the testing data matrix X

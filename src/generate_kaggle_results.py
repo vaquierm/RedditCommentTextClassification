@@ -27,7 +27,7 @@ def generate_kaggle_results(linear_correlation: bool = True):
 
     # Train model
     print("\tTraining model: " + kaggle_model)
-    model = get_model(kaggle_model)
+    model = get_model(kaggle_model, True)
     model.fit(X, Y)
 
     # Lose reference to the training data
