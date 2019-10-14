@@ -4,11 +4,17 @@ import re
 from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
 from nltk.stem import PorterStemmer
-from nltk.tokenize import TweetTokenizer
-from config import token_youtube_link, token_emoticon_funny, token_internet_link
+from nltk.tokenize import TweetTokenizer, RegexpTokenizer
 
-# Lemmatization was compared using diff libraries https://www.machinelearningplus.com/nlp/lemmatization-examples-python/
-
+# Vocab token for youtubelink
+token_youtube_link = "youtubelink"
+# Vocab token for internetlink
+token_internet_link = "internetlink"
+# Vocab token for emoticonFunny
+token_emoticon_funny = "emoticonFunny"
+# Vocab token for year
+token_year1900 = "year1900"
+token_year2000 = "year2000"
 
 def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
     """
@@ -20,9 +26,22 @@ def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
     :return: The processed list of training comments, The processed list of test comments
     """
 
+    additional_features_train = {}
+    additional_features_test = {}
+
     # Preprocess the dataset bu applying custom replacers
+    print("\t\ttrain: Get comment length and average word length in the comment")
+    comments_length_train, average_word_length_train = lenghtOfComments(comments_train)
+    additional_features_train.update({'comment_length': comments_length_train})
+    additional_features_train.update({'average_word_length': average_word_length_train})
+
     print("\t\tApplying custom replacers")
     comments_train = replace_all_for_strong_vocab(comments_train)
+
+    print("\t\tTest: Get comment length and average word length in the comment")
+    comments_length_test, average_word_length_test = lenghtOfComments(comments_test)
+    additional_features_test.update({'comment_length': comments_length_test})
+    additional_features_test.update({'average_word_length': average_word_length_test})
 
     # Get the root of each words
     if vocab_type == "LEMMA":
@@ -38,7 +57,7 @@ def create_vocab(comments_train: list, comments_test: list, vocab_type: str):
     else:
         raise Exception("The type of vocabulary " + vocab_type + " is not known")
 
-    return comments_train, comments_test
+    return comments_train, comments_test, additional_features_train, additional_features_test
     # print(vocab)
     # print(X.toarray())
 
@@ -112,11 +131,32 @@ def reduce_lengthening(text):
     return pattern.sub(r"\1\1", text)
 
 
+def lenghtOfComments(comments):
+    tokenizer = RegexpTokenizer(r'\w+')
+    lengthOfComments = []
+    averageLengthOfWords = []
+    for i in range(len(comments)):
+        tokened_sentence = tokenizer.tokenize(comments[i])
+        lengthOfComments.append(len(tokened_sentence))
+
+        sum = 0
+        for k in range(len(tokened_sentence)):
+            lengthOfWord = len(tokened_sentence[k])
+            sum += lengthOfWord
+        average = round(sum/len(tokened_sentence), 0)
+        averageLengthOfWords.append(average)
+
+    return lengthOfComments, averageLengthOfWords
+
+
 def replace_all_for_strong_vocab(comments):
     for i in range(len(comments)):
         comments[i] = replace_youtube_links(comments[i])
         comments[i] = replace_url(comments[i])
         comments[i] = replace_smiley(comments[i])
+        comments[i] = replace_years1900(comments[i])
+        comments[i] = replace_years2000(comments[i])
+
     return comments
 
 
@@ -146,3 +186,13 @@ def replace_smiley(comment):
     comment = sentence_untokenized
 
     return comment
+
+
+def replace_years1900(comment):
+    regex = (r'(19)\d\d')
+    return re.sub(regex, token_year1900, comment)
+
+
+def replace_years2000(comment):
+    regex = (r'(20)\d\d')
+    return re.sub(regex, token_year2000, comment)

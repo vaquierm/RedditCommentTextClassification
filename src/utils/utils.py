@@ -114,7 +114,7 @@ def load_raw_test_data(file_path: str):
     return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
 
 
-def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
+def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list, additional_features: dict = {}):
     """
     Saves the clean raw data after lemmatization
     :param file_path: The file path to save the new clean raw data
@@ -127,6 +127,12 @@ def save_cleaned_raw_data(file_path: str, og_file_path: str, comments:list):
     df = pd.read_csv(og_file_path)
 
     df.loc[:, 'comments'] = pd.Series(comments)
+
+    listOfAdditionalFeatures = list(additional_features.items())
+
+    for i in range(len(additional_features.keys())):
+        feature = listOfAdditionalFeatures[i]
+        df.loc[:, feature[0]] = pd.Series(feature[1])
 
     df.to_csv(file_path, mode='w', index=False)
 
@@ -161,20 +167,26 @@ def save_processed_data(X, Y, file_path: str):
     np.savetxt(file_path, combined, delimiter=',')
 
 
-def save_results(X, Y, file_path: str):
+def create_results_file(file_path: str):
     """
-    Save the arrays Y into a txt file
-    :param X: X
-    :param Y: Y
-    :param file_path: File to which to save
+    Save the results of each model into a txt file
+    :param file_path: File path to save to
+    """
+    if not os.path.isdir(os.path.dirname(file_path)):
+        open(file_path, 'w+').close()
+    open(file_path, 'w').close()
+
+def append_results(entry, file_path: str):
+    """
+    Save the results of each model into a txt file
+    :param entry: entry to write to file
+    :param file_path: File path to save to
     """
     if not os.path.isdir(os.path.dirname(file_path)):
         raise Exception("The directory " + os.path.dirname(file_path) + " to which you want to save your results does not exist")
-    if X.shape[0] != Y.shape[0]:
-        raise Exception("The cannot save X len(" + str(X.shape[0]) + ") and Y len(" + str(Y.shape[0]) + ") as they differ in length")
-    combined = np.hstack((X, Y.reshape((Y.shape[0], 1))))
-
-    np.savetxt(file_path, combined, delimiter=',')
+    f = open(entry, "a+")
+    f.write(entry)
+    f.close()
 
 def save_kaggle_results(result_file_path: str, Y):
     """

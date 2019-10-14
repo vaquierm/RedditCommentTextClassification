@@ -1,7 +1,7 @@
 from src.models.Model import Model
 
 
-class NB(Model):
+class NaiveBayes(Model):
 
     def fit(self, X, Y):
         """
