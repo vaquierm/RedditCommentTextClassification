@@ -28,12 +28,12 @@ def run_validation_pipeline(linear_correlation: bool = False):
     for vocabulary in vocabularies_to_run:
         print("\tValidation models for vocabulary: " + vocabulary)
 
+        accuracies = pd.DataFrame(columns=["Model", "Vectorizer", "Accuracy"])
         for vec in vectorizers_to_run:
             print("\t\tValidation models with vectorizer: " + vec)
 
             # write header to results file
             append_results("Accuracies for vocabulary " + vocabulary + " and vectorizer " + vec, results_data_file)
-            accuracies = pd.DataFrame(columns=["Model", "Accuracy"])
 
             # Create a vectoriser
             vectorizer = get_vectorizer(vec)
@@ -72,11 +72,11 @@ def run_validation_pipeline(linear_correlation: bool = False):
                 accuracy = accuracy_score(Y, Y_pred)
                 print("\t\t\t\tAccuracy of model " + model_to_run + ": ", accuracy)
                 append_results(model_to_run + ": " + str(accuracy), results_data_file)
-                accuracies = accuracies.append(pd.DataFrame({"Model": [model_to_run], "Accuracy": [accuracy]}))
+                accuracies = accuracies.append(pd.DataFrame({"Model": [model_to_run], "Vectorizer": [vec], "Accuracy": [accuracy]}), ignore_index=True)
 
-            # save the accuracies of vocab for each model
-            results_model_accuracy_file = os.path.join(results_dir_path, "accuracies_" + vocabulary + "_" + vec + ".png")
-            save_accuracy_bargraph(accuracies, vocabulary, results_model_accuracy_file)
+        # save the accuracies of vocab for each model
+        results_model_accuracy_file = os.path.join(results_dir_path, "accuracies_" + vocabulary + ".png")
+        save_accuracy_bargraph(accuracies, vocabulary, results_model_accuracy_file)
 
         print("Validation on all models")
 

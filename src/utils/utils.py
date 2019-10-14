@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from scipy.sparse import hstack
 import os
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 
@@ -310,11 +311,11 @@ def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_valu
 
 def save_accuracy_bargraph(accuracies_model: pd.DataFrame, vocabulary, file_path):
     fig, ax = plt.subplots()
-    ax = accuracies_model.plot.bar(x="Model", y="Accuracy", rot=0)
+    print(accuracies_model)
+    sns.barplot(x="Model", y="Accuracy", hue="Vectorizer", data=accuracies_model, saturation=0.8)
     ax.set(title="Accuracies per model for vocabulary " + vocabulary)
     fig = ax.get_figure()
     fig.set_size_inches(5, 5)
-    fig.tight_layout()
     plt.show()
     fig.savefig(file_path, bbox_inches='tight')
 
