@@ -308,6 +308,17 @@ def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_valu
     fig.savefig(file_path, bbox_inches='tight')
 
 
+def save_accuracy_bargraph(accuracies_model: pd.DataFrame, vocabulary, file_path):
+    fig, ax = plt.subplots()
+    ax = accuracies_model.plot.bar(x="Model", y="Accuracy", rot=0)
+    ax.set(title="Accuracies per model for vocabulary " + vocabulary)
+    fig = ax.get_figure()
+    fig.set_size_inches(5, 5)
+    fig.tight_layout()
+    plt.show()
+    fig.savefig(file_path, bbox_inches='tight')
+
+
 def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool=True):
     """
     Get the testing data matrix X

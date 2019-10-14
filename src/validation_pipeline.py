@@ -9,7 +9,7 @@ from sklearn.utils.multiclass import unique_labels
 
 
 from src.config import processed_dir_path, vocabularies_to_run, vectorizers_to_run, models_to_run, run_grid_search, results_dir_path
-from src.utils.utils import get_training_feature_matrix, save_confusion_matrix, create_results_file, append_results
+from src.utils.utils import get_training_feature_matrix, save_confusion_matrix, create_results_file, append_results, int_to_subreddit, save_accuracy_bargraph
 from src.utils.factory import get_vectorizer, get_model
 
 
@@ -33,6 +33,7 @@ def run_validation_pipeline(linear_correlation: bool = False):
 
             # write header to results file
             append_results("Accuracies for vocabulary " + vocabulary + " and vectorizer " + vec, results_data_file)
+            accuracies = pd.DataFrame(columns=["Model", "Accuracy"])
 
             # Create a vectoriser
             vectorizer = get_vectorizer(vec)
@@ -64,16 +65,18 @@ def run_validation_pipeline(linear_correlation: bool = False):
 
                 # get confusion matrix and save to png
                 conf_mat = confusion_matrix(Y, Y_pred)
-                results_confusion_matrix_file = os.path.join(results_dir_path, vocabulary + "_"+ vec + "confusion.png")
-                save_confusion_matrix(conf_mat, "Confusion Matrix for vocabulary " + vocabulary + " and vectorizer " + vec, unique_labels(Y_pred, Y), results_confusion_matrix_file)
+                results_confusion_matrix_file = os.path.join(results_dir_path, vocabulary + "_"+ vec + "_" + model_to_run + "_" + "confusion.png")
+                save_confusion_matrix(conf_mat, "Confusion Matrix for vocabulary " + vocabulary + ", vectorizer " + vec + "and model " + model_to_run, list(map(lambda pred: int_to_subreddit[pred], unique_labels(Y_pred, Y))), results_confusion_matrix_file)
 
                 # get accuracy
                 accuracy = accuracy_score(Y, Y_pred)
                 print("\t\t\t\tAccuracy of model " + model_to_run + ": ", accuracy)
-                append_results(model.__class__.__name__ + ": " + str(accuracy), results_data_file)
+                append_results(model_to_run + ": " + str(accuracy), results_data_file)
+                accuracies = accuracies.append(pd.DataFrame({"Model": [model_to_run], "Accuracy": [accuracy]}))
 
-            # save the accuracies of vocab for each model???
-            # save_accuracy_bargraph(accuracies)
+            # save the accuracies of vocab for each model
+            results_model_accuracy_file = os.path.join(results_dir_path, "accuracies_" + vocabulary + "_" + vec + ".png")
+            save_accuracy_bargraph(accuracies, vocabulary, results_model_accuracy_file)
 
         print("Validation on all models")
 
