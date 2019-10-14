@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 
 
 def get_vectorizer(vectorizer_name):
@@ -33,6 +33,8 @@ def get_model(model_name: str, grid_search: bool = False):
             return GridSearchCV(LogisticRegression(multi_class='auto'), param_grid, cv=5)
     elif model_name == "NB":
         return NaiveBayes()
+    elif model_name == "NB_SKLEARN":
+        return BernoulliNB()
     elif model_name == "MNNB":
         if not grid_search:
             return MultinomialNB(alpha=0.0001)
