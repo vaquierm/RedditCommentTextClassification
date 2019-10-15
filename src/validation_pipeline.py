@@ -107,7 +107,7 @@ def remove_low_correlation_features(X, Y, return_index_array: bool = False):
 
     p_scores = np.log(X.getnnz(axis=0)) * p_scores
     # Get indicies of high p_score features
-    high_pscores = (p_scores.mean() - 0.4 * p_scores.std()) > p_scores
+    high_pscores = (p_scores.mean() + 0.5 * p_scores.std()) > p_scores
 
     if not return_index_array:
         return X[:, high_pscores]
