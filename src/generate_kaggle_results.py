@@ -2,7 +2,7 @@ import os
 
 from src.config import kaggle_model, kaggle_vectorizer, kaggle_vocab, processed_dir_path, results_dir_path
 from src.utils.utils import get_training_feature_matrix, get_testing_feature_matrix, save_kaggle_results
-from src.utils.factory import get_model, get_vectorizer
+from src.utils.factory import get_vectorizer, get_model
 from src.validation_pipeline import remove_low_correlation_features
 
 

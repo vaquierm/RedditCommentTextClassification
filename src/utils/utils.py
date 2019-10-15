@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from scipy.sparse import hstack
 import os
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 # This file contains any util functions needed across the project.
@@ -171,6 +173,20 @@ def save_cleaned_raw_data(file_path: str, og_file_path: str, comments: list, add
     df.to_csv(file_path, mode='w', index=False)
 
 
+def load_processed_data(file_path: str):
+    """
+    Loads the processed data test from the csv file
+    :param file_path: File path of processed data
+    :return: numpy array (Nx1) of id's of comments, List of comments
+    """
+    if not os.path.isfile(file_path):
+        raise Exception("The file " + file_path + " from which you are trying to load your processed data does not exist")
+
+    df = pd.read_csv(file_path)
+    ids = list(df['id'])
+    return np.array(ids).reshape((len(ids), 1)), list(df['comments'])
+
+
 def save_processed_data(X, Y, file_path: str):
     """
     Save the arrays X and Y into a csv file
@@ -185,6 +201,29 @@ def save_processed_data(X, Y, file_path: str):
     combined = np.hstack((X, Y.reshape((Y.shape[0], 1))))
 
     np.savetxt(file_path, combined, delimiter=',')
+
+
+def create_results_file(file_path: str):
+    """
+    Save the results of each model into a txt file
+    :param file_path: File path to save to
+    """
+    if not os.path.isdir(os.path.dirname(file_path)):
+        open(file_path, 'w+').close()
+    open(file_path, 'w').close()
+
+
+def append_results(entry, file_path: str):
+    """
+    Save the results of each model into a txt file
+    :param entry: entry to write to file
+    :param file_path: File path to save to
+    """
+    if not os.path.isdir(os.path.dirname(file_path)):
+        raise Exception("The directory " + os.path.dirname(file_path) + " to which you want to save your results does not exist")
+    f = open(file_path, "a+")
+    f.write(entry + "\n")
+    f.close()
 
 
 def save_kaggle_results(result_file_path: str, Y):
@@ -259,12 +298,12 @@ def get_training_feature_matrix_folds(vectorizer, raw_data_path: str, folds: int
 
 def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool = True):
     """
-    Get the testing data matrix X
-    :param vectorizer: Vectorizer for the string data
-    :param raw_data_path: data path of the raw data
-    :param fit: If true it will perform a fit transform, otherwise, just a fit
-    :return: X
-    """
+        Get the testing data matrix X
+        :param vectorizer: Vectorizer for the string data
+        :param raw_data_path: data path of the raw data
+        :param fit: If true it will perform a fit transform, otherwise, just a fit
+        :return: X
+        """
     ids, comments, additional_features = load_raw_test_data(raw_data_path, get_additional_features=True)
 
     # Vectorize the comments ad return them
@@ -280,3 +319,56 @@ def get_testing_feature_matrix(vectorizer, raw_data_path: str, fit: bool = True)
     feature_arrays.insert(0, X)
 
     return hstack(feature_arrays).tocsr()
+
+
+def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_values=True):
+    """
+    :param confusion_matrix: matrix to graph
+    :param title: title of the graph
+    :param classes: classes Y
+    :param file_path: path to save to
+    :param show_values: insert exact value of the matrix in each cell
+    """
+    fig, ax = plt.subplots()
+    im = ax.imshow(confusion_matrix, interpolation='nearest', cmap=plt.cm.Blues)
+    ax.figure.colorbar(im, ax=ax)
+
+    ax.set(xticks=np.arange(confusion_matrix.shape[1]),
+           yticks=np.arange(confusion_matrix.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title,
+           ylabel='True label',
+           xlabel='Predicted label')
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+    # change size
+    fig.set_size_inches(10, 10)
+
+    # Loop over data dimensions and create text annotations.
+    if show_values:
+        thresh = confusion_matrix.max() / 2.
+        for i in range(confusion_matrix.shape[0]):
+            for j in range(confusion_matrix.shape[1]):
+                ax.text(j, i, format(confusion_matrix[i, j], "d"),
+                        ha="center", va="center",
+                        color="white" if confusion_matrix[i, j] > thresh else "black")
+    fig.tight_layout()
+
+    # save to file
+    plt.show()
+    fig.savefig(file_path, bbox_inches='tight')
+
+
+def save_accuracy_bargraph(accuracies_model: pd.DataFrame, vocabulary, file_path):
+    fig, ax = plt.subplots()
+    print(accuracies_model)
+    sns.barplot(x="Model", y="Accuracy", hue="Vectorizer", data=accuracies_model, saturation=0.8)
+    ax.set(title="Accuracies per model for vocabulary " + vocabulary)
+    fig = ax.get_figure()
+    fig.set_size_inches(5, 5)
+    plt.show()
+    fig.savefig(file_path, bbox_inches='tight')
+
