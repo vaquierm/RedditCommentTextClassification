@@ -276,6 +276,7 @@ def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_valu
     :param file_path: path to save to
     :param show_values: insert exact value of the matrix in each cell
     """
+    TOTAL_COMMENTS = confusion_matrix.sum()
     fig, ax = plt.subplots()
     im = ax.imshow(confusion_matrix, interpolation='nearest', cmap=plt.cm.Blues)
     ax.figure.colorbar(im, ax=ax)
@@ -292,14 +293,14 @@ def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_valu
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
              rotation_mode="anchor")
     # change size
-    fig.set_size_inches(10, 10)
+    fig.set_size_inches(14, 14)
 
     # Loop over data dimensions and create text annotations.
     if show_values:
         thresh = confusion_matrix.max() / 2.
         for i in range(confusion_matrix.shape[0]):
             for j in range(confusion_matrix.shape[1]):
-                ax.text(j, i, format(confusion_matrix[i, j], "d"),
+                ax.text(j, i, "%.2f" % ((confusion_matrix[i, j]/TOTAL_COMMENTS)*100),
                         ha="center", va="center",
                         color="white" if confusion_matrix[i, j] > thresh else "black")
     fig.tight_layout()
