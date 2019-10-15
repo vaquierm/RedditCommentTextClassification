@@ -16,7 +16,7 @@ def get_vectorizer(vectorizer_name):
         return CountVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 2),
                                      strip_accents='ascii', binary=True)
     elif vectorizer_name == "TFIDF":
-        return TfidfVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 2),
+        return TfidfVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
                                      strip_accents='ascii')
     else:
         raise Exception("The type of vectorizer " + vectorizer_name + " is not known")
@@ -35,10 +35,10 @@ def get_model(model_name: str, grid_search: bool = False):
         return NaiveBayes()
     elif model_name == "MNNB":
         if not grid_search:
-            return MultinomialNB(alpha=0.28)
+            return MultinomialNB(alpha=0.0001)
         else:
             param_grid = {
-                'alpha': np.arange(0.0001, 0.002, 0.0001).tolist()
+                'alpha': np.arange(0.1, 0.5, 0.05).tolist()
             }
             return GridSearchCV(MultinomialNB(), param_grid, cv=5)
     elif model_name == "KNN":

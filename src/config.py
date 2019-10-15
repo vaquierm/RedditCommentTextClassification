@@ -1,4 +1,6 @@
 # Contains the raw data downloaded from https://www.kaggle.com/c/reddit-comment-classification-comp-551/data
+
+
 raw_data_dir_path: str = "../data/raw_data"
 # Contains all the cleaned processed raw data
 processed_dir_path: str = "../data/processed_data"
