@@ -14,10 +14,10 @@ from sklearn.naive_bayes import MultinomialNB
 
 def get_vectorizer(vectorizer_name):
     if vectorizer_name == "BINARY":
-        return CountVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 2),
+        return CountVectorizer(min_df=int(0), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
                                      strip_accents='ascii', binary=True)
     elif vectorizer_name == "TFIDF":
-        return TfidfVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 2),
+        return TfidfVectorizer(min_df=int(0), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
                                      strip_accents='ascii')
     else:
         raise Exception("The type of vectorizer " + vectorizer_name + " is not known")

@@ -36,7 +36,7 @@ class LazyNaiveBayes(Model):
         self.p_scores = f_classif(X, Y)[1]
 
         # Weight the scores based on the number of appearances (How much can we trust each correlation score)
-        self.p_scores = self.p_scores * np.log(X.getnnz(axis=0))
+        #self.p_scores = self.p_scores * np.log(X.getnnz(axis=0))
 
     def predict(self, X):
         """
@@ -55,7 +55,7 @@ class LazyNaiveBayes(Model):
 
         number_of_words_known = np.sum(X_reduced.getnnz(axis=1))
 
-        p_scores_reduced = self.p_scores[present_words]
+        p_scores_reduced = self.p_scores[present_words] * (np.log(X_train_reduced.getnnz(axis=0) + X_reduced.getnnz(axis=0)))
 
         # Now based on the correlation scores, select the best p_score indicies to train with making sure that most comment has at least 2 features
         min_score = p_scores_reduced.min()
@@ -71,7 +71,7 @@ class LazyNaiveBayes(Model):
             words_found = np.sum(X_double_reduced.getnnz(axis=1))
 
             print(words_found / number_of_words_known)
-            if words_found / number_of_words_known > 0.85:
+            if words_found / number_of_words_known > 0.94:
                 print(X_double_reduced.shape)
                 break
 
