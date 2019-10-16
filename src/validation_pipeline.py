@@ -68,8 +68,8 @@ def run_validation_pipeline(linear_correlation: bool = True):
                 save_confusion_matrix(conf_mat, "Confusion Matrix for vocabulary " + vocabulary + ", vectorizer " + vec + "and model " + model_to_run, list(map(lambda pred: int_to_subreddit[pred], unique_labels(Y))), results_confusion_matrix_file)
                 print("\t\t\t\tAccuracy of model " + model_to_run + ": ", acc)
 
-                append_results(model_to_run + ": " + str(accuracy), results_data_file)
-                accuracies = accuracies.append(pd.DataFrame({"Model": [model_to_run], "Vectorizer": [vec], "Accuracy": [accuracy]}), ignore_index=True)
+                append_results(model_to_run + ": " + str(acc), results_data_file)
+                accuracies = accuracies.append(pd.DataFrame({"Model": [model_to_run], "Vectorizer": [vec], "Accuracy": [acc]}), ignore_index=True)
 
         # save the accuracies of vocab for each model
         results_model_accuracy_file = os.path.join(results_dir_path, "accuracies_" + vocabulary + ".png")
