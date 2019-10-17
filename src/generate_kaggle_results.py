@@ -6,7 +6,7 @@ from src.utils.factory import get_vectorizer, get_model
 from src.validation_pipeline import remove_low_correlation_features
 
 
-def generate_kaggle_results(linear_correlation: bool = True):
+def generate_kaggle_results(linear_correlation: bool = False):
 
     print("\n\n Generating Kaggle submission with model: " + kaggle_model + ", vocabulary: " + kaggle_vocab + ", and vectorizer: " + kaggle_vectorizer)
 

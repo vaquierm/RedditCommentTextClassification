@@ -16,7 +16,7 @@ from src.utils.factory import get_vectorizer, get_model
 # This file contains the automation of converting all the raw data to feature vectors
 
 
-def run_validation_pipeline(linear_correlation: bool = True):
+def run_validation_pipeline(linear_correlation: bool = False):
 
     results_data_file = os.path.join(results_dir_path, "results.txt")
 

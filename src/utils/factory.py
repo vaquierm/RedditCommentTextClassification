@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, ENGLISH_STOP_WORDS
 from sklearn.model_selection import GridSearchCV
 from src.models.SuperModel import SuperModel
+from src.models.LazyNaiveBayes import LazyNaiveBayes
 from src.models.NaiveBayes import NaiveBayes
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
@@ -13,10 +14,10 @@ from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 
 def get_vectorizer(vectorizer_name):
     if vectorizer_name == "BINARY":
-        return CountVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 2),
+        return CountVectorizer(min_df=int(0), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
                                      strip_accents='ascii', binary=True)
     elif vectorizer_name == "TFIDF":
-        return TfidfVectorizer(min_df=int(2), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
+        return TfidfVectorizer(min_df=int(0), stop_words=ENGLISH_STOP_WORDS, ngram_range=(1, 1),
                                      strip_accents='ascii')
     else:
         raise Exception("The type of vectorizer " + vectorizer_name + " is not known")
@@ -60,5 +61,7 @@ def get_model(model_name: str, grid_search: bool = False):
             return GridSearchCV(SVC(decision_function_shape='ovr', class_weight='balanced'), param_grid, cv=5)
     elif model_name == "SUPER":
         return SuperModel()
+    elif model_name == "LAZYNB":
+        return LazyNaiveBayes()
     else:
         raise Exception("The model " + model_name + " is not recognized")
