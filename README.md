@@ -1,6 +1,28 @@
 # RedditCommentTextClassification
 
 
+## How to run the program!
+
+1. Download both the training data and testing data from kaggle [Kaggle](https://www.kaggle.com/c/reddit-comment-classification-comp-551/data) and placeplace them in the ````data/raw_data directory````
+
+</br>
+
+2. Open the ````src/config.py```` file.
+- Make sure that all data paths defined at the top of the file are correct. (They should be fine without being changed)
+- In the ````vocabularies_to_run```` array, add which vocabularies you would like to test. (Possible values of "LEMMA" and "STEM")
+- In the ````vectorizers_to_run```` array, add which encodings you would like to test. (Possible values of "BINARY" and "TFIDF")
+- In the ````models_to_run```` array, add all the models that you want to run on all the above configurations. (Possible values of "LAZYNB", "LR", "NB", "MNNB", "DT", "RF", "SVM")
+- Modify the ````kaggle_vocab````, ````kaggle_vectorizer````, ````kaggle_model```` variables to be the configuration and model you would like to run to generate results to be submitted to kaggle.
+
+</br>
+
+3. Run the ````main.py```` file.
+- First the ````create_vocabulary.py```` script will be ran which preprocess all the initial raw data to be lemmatized and stemmed. All custom regex filters are applied as well to reduce the feature space. Once the raw data is processed, it is saved into another csv file in the ````data/preprocessed_data/```` folder.
+- Then the ````validation_pipeline.py```` script runs which runs all different configurations and models that are defined in the ````config.py```` file and calculates the accuracy, confusion matrices, and saves all this data in the ````results/```` folder.
+- Then finally ````generate_kaggle_results.py```` runs which: based on the submission configuration and model defined in the ````config.py```` file, predicts the test data and generates a ````predictions.csv```` file in the ````results/```` folder to be submitted to kaggle.
+
+Note: In step 3, the three top level scripts ````create_vocabulary.py````, ````validation_pipeline.py````, and ````generate_kaggle_results.py```` can also be ran individually as long as they are ran in this order.
+
 ## Directory Structure
 
 ````
