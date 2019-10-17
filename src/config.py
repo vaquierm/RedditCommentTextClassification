@@ -11,7 +11,7 @@ results_dir_path: str = "../results"
 vocabularies_to_run = ["STEM", "LEMMA"]
 
 # These are all the different vectorizers to run ("BINARY", "TFIDF")
-vectorizers_to_run = ["TFIDF", "BINARY"]
+vectorizers_to_run = ["TFIDF"]
 
 # These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "MNNB", "KNN", "DT", "RF", "SVM", "SUPER")
 models_to_run = ["LAZYNB", "MNNB"]
