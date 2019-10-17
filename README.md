@@ -1,7 +1,45 @@
 # RedditCommentTextClassification
 
+This repository explores an implementation of text preprocessing in order to perform a multi-class classification task on reddit comments. The goal is to predict the subreddit from which a particular reddit comment comes from. The dataset contains comments from 20 different subreddits. [(Dataset here)](https://www.kaggle.com/c/reddit-comment-classification-comp-551/data)
 
-## How to run the program!
+ - 'AskReddit'
+ - 'GlobalOffensive'
+ - 'Music'
+ - 'Overwatch'
+ - 'anime'
+ - 'baseball'
+ - 'canada'
+ - 'conspiracy'
+ - 'europe'
+ - 'funny'
+ - 'gameofthrones'
+ - 'hockey'
+ - 'leagueoflegends'
+ - 'movies'
+ - 'nba'
+ - 'nfl'
+ - 'soccer'
+ - 'trees'
+ - 'worldnews'
+ - 'wow'
+
+## Best Results
+
+The best results for this classification task were obtained with this preprocessing:
+
+- Stemmed vocabulary
+- Custom regex filters applied to:
+  - Remap all youtuble links to a token called youtubelink
+  - Remap all other links to a token called internetlink
+  - Remap different smiley faces ( ;) :) :') :-) etc... ) to a common token
+  - Remove tripple letters to remap words like (loool, or looooool to lol)
+  - Remap years such as 20xx and 19xx to comon tokens
+
+- The Tf-Idf vectorizer to encode the data into a sparse matrix
+
+- The custom Lazy Naive Bayes model which performs feature selection at prediction time using the ANOVA F-value score of each feature.
+
+# How to run the program!
 
 1. Download both the training data and testing data from kaggle [Kaggle](https://www.kaggle.com/c/reddit-comment-classification-comp-551/data) and placeplace them in the ````data/raw_data directory````
 
