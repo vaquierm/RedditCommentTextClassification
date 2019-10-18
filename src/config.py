@@ -11,13 +11,13 @@ results_dir_path: str = "../results"
 vocabularies_to_run = ["STEM", "LEMMA"]
 
 # These are all the different vectorizers to run ("BINARY", "TFIDF")
-vectorizers_to_run = ["TFIDF"]
+vectorizers_to_run = ["BINARY", "TFIDF"]
 
 # These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "MNNB", "KNN", "DT", "RF", "SVM", "SUPER")
-models_to_run = ["LAZYNB", "MNNB"]
+models_to_run = ["LAZYNB", "MNNB", "LR", "SVM", "DT", "RF"]
 
 # If this is true, run gridsearch on each model (This will significantly increase the runtime of the validation pipeline for model types that support gridsearch)
-run_grid_search = True
+run_grid_search = False
 
 # Config to run for kaggle
 kaggle_vocab = "STEM"
