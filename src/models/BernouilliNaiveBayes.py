@@ -5,7 +5,7 @@ from sklearn.utils.extmath import safe_sparse_dot
 from src.models.Model import Model
 
 
-class NaiveBayes(Model):
+class BernouilliNaiveBayes(Model):
 
     def __init__(self, alpha: float = 1):
         if alpha < 0:
