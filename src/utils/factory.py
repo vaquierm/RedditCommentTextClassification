@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, EN
 from sklearn.model_selection import GridSearchCV
 from src.models.SuperModel import SuperModel
 from src.models.LazyNaiveBayes import LazyNaiveBayes
-from src.models.NaiveBayes import NaiveBayes
+from src.models.BernouilliNaiveBayes import BernouilliNaiveBayes
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -33,7 +33,7 @@ def get_model(model_name: str, grid_search: bool = False):
                  'solver': ['saga', 'lbfgs']}
             return GridSearchCV(LogisticRegression(multi_class='auto'), param_grid, cv=5)
     elif model_name == "NB":
-        return NaiveBayes()
+        return BernouilliNaiveBayes()
     elif model_name == "NB_SKLEARN":
         return BernoulliNB()
     elif model_name == "MNNB":
