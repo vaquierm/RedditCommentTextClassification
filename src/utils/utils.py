@@ -329,7 +329,8 @@ def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_valu
     :param file_path: path to save to
     :param show_values: insert exact value of the matrix in each cell
     """
-    TOTAL_COMMENTS = confusion_matrix.sum()
+    confusion_matrix = confusion_matrix / np.sum(confusion_matrix, axis=0)
+    confusion_matrix = confusion_matrix * 100
     fig, ax = plt.subplots()
     im = ax.imshow(confusion_matrix, interpolation='nearest', cmap=plt.cm.Blues)
     ax.figure.colorbar(im, ax=ax)
@@ -353,23 +354,26 @@ def save_confusion_matrix(confusion_matrix, title, classes, file_path, show_valu
         thresh = confusion_matrix.max() / 2.
         for i in range(confusion_matrix.shape[0]):
             for j in range(confusion_matrix.shape[1]):
-                ax.text(j, i, "%.2f" % ((confusion_matrix[i, j]/TOTAL_COMMENTS)*100),
+                ax.text(j, i, "%.2f" % (confusion_matrix[i, j]),
                         ha="center", va="center",
                         color="white" if confusion_matrix[i, j] > thresh else "black")
     fig.tight_layout()
 
     # save to file
-    plt.show()
+    #plt.show()
     fig.savefig(file_path, bbox_inches='tight')
 
 
 def save_accuracy_bargraph(accuracies_model: pd.DataFrame, vocabulary, file_path):
     fig, ax = plt.subplots()
     print(accuracies_model)
-    sns.barplot(x="Model", y="Accuracy", hue="Vectorizer", data=accuracies_model, saturation=0.8)
+    splot = sns.barplot(x="Model", y="Accuracy", hue="Vectorizer", data=accuracies_model, saturation=0.8)
     ax.set(title="Accuracies per model for vocabulary " + vocabulary)
+    for p in splot.patches:
+        splot.annotate(format(p.get_height(), '.4f'), (p.get_x() + p.get_width() / 2., p.get_height()), ha='center',
+                       va='center', xytext=(0, 10), textcoords='offset points')
+    #plt.show()
     fig = ax.get_figure()
-    fig.set_size_inches(5, 5)
-    plt.show()
+    fig.set_size_inches(10, 5)
     fig.savefig(file_path, bbox_inches='tight')
 

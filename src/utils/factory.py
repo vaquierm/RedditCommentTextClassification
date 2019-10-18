@@ -49,7 +49,7 @@ def get_model(model_name: str, grid_search: bool = False):
     elif model_name == "DT":
         return DecisionTreeClassifier()
     elif model_name == "RF":
-        return RandomForestClassifier(n_estimators=500, random_state=0, class_weight='balanced')
+        return RandomForestClassifier(random_state=0, class_weight='balanced')
     elif model_name == "SVM":
         if not grid_search:
             return SVC(kernel='linear', decision_function_shape='ovr', class_weight='balanced')
