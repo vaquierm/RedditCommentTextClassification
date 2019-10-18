@@ -62,7 +62,7 @@ The best results for this classification task were obtained with this preprocess
 - Make sure that all data paths defined at the top of the file are correct. (They should be fine without being changed)
 - In the ````vocabularies_to_run```` array, add which vocabularies you would like to test. (Possible values of "LEMMA" and "STEM")
 - In the ````vectorizers_to_run```` array, add which encodings you would like to test. (Possible values of "BINARY" and "TFIDF")
-- In the ````models_to_run```` array, add all the models that you want to run on all the above configurations. (Possible values of "LAZYNB", "LR", "NB", "MNNB", "DT", "RF", "SVM")
+- In the ````models_to_run```` array, add all the models that you want to run on all the above configurations. (Possible values of "LAZYNB", "LR", "BNB", "MNNB", "DT", "RF", "SVM")
 - Modify the ````kaggle_vocab````, ````kaggle_vectorizer````, ````kaggle_model```` variables to be the configuration and model you would like to run to generate results to be submitted to kaggle.
 
 </br>
