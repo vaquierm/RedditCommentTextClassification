@@ -39,6 +39,19 @@ The best results for this classification task were obtained with this preprocess
 
 - The custom Lazy Naive Bayes model which performs feature selection at prediction time using the ANOVA F-value score of each feature.
 
+- An accuracy of 57.03% was botained with a 5-fold cross validation
+
+<table style="width:100%">
+  <tr>
+    <th>
+      <img src="results/accuracies_STEM.png" width="350"/>
+    </th>
+    <th>
+      <img src="results/STEM_TFIDF_LAZYNB_confusion.png" width="500"/>
+    </th>
+  </tr>
+</table>
+
 # How to run the program!
 
 1. Download both the training data and testing data from kaggle [Kaggle](https://www.kaggle.com/c/reddit-comment-classification-comp-551/data) and placeplace them in the ````data/raw_data directory````
