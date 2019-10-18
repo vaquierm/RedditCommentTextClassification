@@ -54,7 +54,7 @@ The best results for this classification task were obtained with this preprocess
 
 # How to run the program!
 
-1. Download both the training data and testing data from kaggle [Kaggle](https://www.kaggle.com/c/reddit-comment-classification-comp-551/data) and place them in the ````data/raw_data directory````
+1. Download both the training data and testing data from [Kaggle](https://www.kaggle.com/c/reddit-comment-classification-comp-551/data) and place them in the ````data/raw_data directory````
 
 </br>
 
@@ -70,7 +70,7 @@ The best results for this classification task were obtained with this preprocess
 3. Run the ````main.py```` file.
 - First the ````create_vocabulary.py```` script will be ran, which preprocesses all the initial raw data to be lemmatized and stemmed. All custom regex filters are applied as well to reduce the feature space. Once the raw data is processed, it is saved into another csv file in the ````data/preprocessed_data/```` folder.
 - Then the ````validation_pipeline.py```` script runs, which runs all different configurations and models that are defined in the ````config.py```` file and calculates the accuracy, confusion matrices, and saves all this data in the ````results/```` folder.
-- Then finally ````generate_kaggle_results.py```` runs which: based on the submission configuration and model defined in the ````config.py```` file, predicts the test data and generates a ````predictions.csv```` file in the ````results/```` folder to be submitted to kaggle.
+- Then finally ````generate_kaggle_results.py```` runs which: based on the submission configuration and model defined in the ````config.py```` file, predicts the test data and generates a ````predictions.csv```` file in the ````results/```` folder to be submitted to Kaggle.
 
 Note: In step 3, the three top level scripts ````create_vocabulary.py````, ````validation_pipeline.py````, and ````generate_kaggle_results.py```` can also be ran individually as long as they are ran in this order.
 
@@ -79,19 +79,19 @@ Note: In step 3, the three top level scripts ````create_vocabulary.py````, ````v
 ````
 .
 ├── data
-│   ├── processed_data
-│   │   ├── LEMMA_test_clean.csv
-│   │   ├── LEMMA_train_clean.csv
-│   │   ├── STEM_test_clean.csv
-│   │   └── STEM_train_clean.csv
-│   └── raw_data
-│       ├── reddit_test.csv
-│       └── reddit_train.csv
+│   ├── processed_data
+│   │   ├── LEMMA_test_clean.csv
+│   │   ├── LEMMA_train_clean.csv
+│   │   ├── STEM_test_clean.csv
+│   │   └── STEM_train_clean.csv
+│   └── raw_data
+│       ├── reddit_test.csv
+│       └── reddit_train.csv
 |
 ├── results
-│   ├── predictions.csv
-│   ├── results.txt
-│   └── STEM_BINARY_DT_confusion.png
+│   ├── predictions.csv
+│   ├── results.txt
+│   └── STEM_BINARY_DT_confusion.png
 |
 └── src
     ├── main.py
@@ -104,16 +104,16 @@ Note: In step 3, the three top level scripts ````create_vocabulary.py````, ````v
     ├── Data_Analysis.ipynb
     |
     ├── data_processing
-    │   └── vocabulary.py
+    │   └── vocabulary.py
     |
     ├── models
-    │   ├── LazyNaiveBayes.py
-    │   ├── Model.py
-    │   └── BernouilliNaiveBayes.py
+    │   ├── LazyNaiveBayes.py
+    │   ├── Model.py
+    │   └── BernouilliNaiveBayes.py
     |
     └── utils
-        ├── factory.py
-        └── utils.py
+        ├── factory.py
+        └── utils.py
 
 ````
 
@@ -148,7 +148,7 @@ The ````src/```` folder contains all of the .py and .ipynb files. Python files d
 
 - The ````data_processing/vocabulary.py```` file contains all helper functions that clean up the initial raw data by lemmatizing it, applying custom regex filters etc...
 
-- The ````models/```` directory contains a *from scratch* implementation of Bernoulli Naive Bayes and a Lazy implementation of Naive Bayes using the MultinomialNB model from sklearn.
+- The ````models/```` directory contains a *from scratch* implementation of Bernoulli Naive Bayes and a Lazy implementation of Naive Bayes using the MultinomialNB model from Sklearn.
 
 - The ````utils/factory.py```` file contains all functions to get instances of models and vectorizers based on the trying keywords defines in the ````config.py```` file.
 
