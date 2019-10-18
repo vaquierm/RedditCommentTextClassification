@@ -109,7 +109,7 @@ Note: In step 3, the three top level scripts ````create_vocabulary.py````, ````v
     ├── models
     │   ├── LazyNaiveBayes.py
     │   ├── Model.py
-    │   └── NaiveBayes.py
+    │   └── BernouilliNaiveBayes.py
     |
     └── utils
         ├── factory.py
