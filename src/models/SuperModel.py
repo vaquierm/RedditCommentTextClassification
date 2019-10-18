@@ -6,6 +6,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 
 
+# This is an stacked ensemble classifier.
 from src.models.Model import Model
 
 
@@ -14,7 +15,7 @@ class SuperModel(Model):
     def __init__(self):
         super().__init__()
 
-        # Create all the models that will be used in the ensemble # TODO: Figure out what models are good here
+        # Create all the models that will be used in the ensemble
         self.models = []
         self.models.append(SVC(kernel='linear', decision_function_shape='ovr', class_weight='balanced'))
         self.models.append(RandomForestClassifier(n_estimators=150, max_depth=10, random_state=0, class_weight='balanced'))
