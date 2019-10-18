@@ -70,17 +70,13 @@ class LazyNaiveBayes(Model):
             # Check the percentage of features that have at least two words known
             words_found = np.sum(X_double_reduced.getnnz(axis=1))
 
-            print(words_found / number_of_words_known)
             if words_found / number_of_words_known > 0.94:
-                print(X_double_reduced.shape)
                 break
 
             boundary += increment
 
         # Train the model with the selected features
         self.model.fit(X_train_reduced[:, indicies_to_use], self.Y_train)
-
-        print(self.model.best_params_)
 
         # Predict with this model
         return self.model.predict(X_reduced[:, indicies_to_use])
