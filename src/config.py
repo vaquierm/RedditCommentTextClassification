@@ -13,7 +13,7 @@ vocabularies_to_run = ["STEM", "LEMMA"]
 # These are all the different vectorizers to run ("BINARY", "TFIDF")
 vectorizers_to_run = ["TFIDF"]
 
-# These are all the models to run and compare performance on a k fold cross validation ("LR", "NB", "MNNB", "KNN", "DT", "RF", "SVM", "SUPER")
+# These are all the models to run and compare performance on a k fold cross validation ("LR", "BNB", "MNNB", "KNN", "DT", "RF", "SVM", "SUPER")
 models_to_run = ["LAZYNB", "MNNB"]
 
 # If this is true, run gridsearch on each model (This will significantly increase the runtime of the validation pipeline for model types that support gridsearch)

@@ -32,9 +32,9 @@ def get_model(model_name: str, grid_search: bool = False):
                  'C': np.logspace(-4, 4, 20),
                  'solver': ['saga', 'lbfgs']}
             return GridSearchCV(LogisticRegression(multi_class='auto'), param_grid, cv=5)
-    elif model_name == "NB":
+    elif model_name == "BNB":
         return BernouilliNaiveBayes()
-    elif model_name == "NB_SKLEARN":
+    elif model_name == "BNB_SKLEARN":
         return BernoulliNB()
     elif model_name == "MNNB":
         if not grid_search:
